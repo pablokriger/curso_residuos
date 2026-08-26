@@ -353,7 +353,9 @@
             border-radius: 50%;
             margin-right: 5px;
         }
-        .task-node .node-actions {
+
+        /* Acciones de nodo: ocultas por defecto, se muestran al pasar el cursor o seleccionar */
+        .node-actions {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -363,7 +365,18 @@
             border-radius: 20px;
             padding: 2px 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 10;
         }
+        .task-node:hover .node-actions,
+        .task-node:focus-within .node-actions,
+        .task-node.selected .node-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .btn-node {
             background: none;
             border: none;
@@ -373,10 +386,20 @@
             padding: 2px 4px;
             border-radius: 4px;
             transition: 0.2s;
+            font-weight: 600;
         }
         .btn-node:hover {
             background: #f0f0f0;
             color: var(--danger);
+        }
+        /* Botón único para nodos de tipo Texto: gris y sin negrita */
+        .task-node.tipo-texto .btn-node {
+            color: #999;
+            font-weight: 400;
+        }
+        .task-node.tipo-texto .btn-node:hover {
+            color: #666;
+            background: #f0f0f0;
         }
 
         /* Tipos de nodo */
@@ -393,6 +416,7 @@
         }
         .task-node.tipo-texto .node-title {
             color: #444;
+            font-weight: 400; /* Sin negrita para texto */
         }
 
         /* Modal para crear/editar tarea */
@@ -861,30 +885,56 @@
                 // Si es tipo Texto, no incluir el punto de color
                 const colorDotHTML = tarea.tipo === 'Texto' ? '' : `<span class="color-dot" style="background:${tarea.color}"></span>`;
 
-                nodo.innerHTML = `
-                    <div class="node-actions">
+                // Definir acciones según tipo
+                let accionesHTML = '';
+                if (tarea.tipo === 'Texto') {
+                    // Solo botón de editar, gris y sin negrita
+                    accionesHTML = `
+                        <button class="btn-node btn-edit" title="Editar texto"><i class="fa-solid fa-pen"></i></button>
+                    `;
+                } else {
+                    accionesHTML = `
                         <button class="btn-node btn-edit" title="Editar"><i class="fa-solid fa-pen"></i></button>
                         <button class="btn-node btn-connect" title="Conectar a..."><i class="fa-solid fa-link"></i></button>
                         <button class="btn-node btn-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                }
+
+                nodo.innerHTML = `
+                    <div class="node-actions">
+                        ${accionesHTML}
                     </div>
                     <div class="node-title">${colorDotHTML}${escapeHtml(tarea.titulo)}</div>
                     <div class="node-desc">${escapeHtml(tarea.descripcion)}</div>
                     <div class="node-actores">${escapeHtml(tarea.actores)}</div>
                 `;
+
                 nodo.addEventListener('mousedown', (e) => iniciarArrastre(e, tarea.id));
                 nodo.addEventListener('touchstart', (e) => iniciarArrastreTouch(e, tarea.id), { passive: false });
-                nodo.querySelector('.btn-edit').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    editarTarea(tarea.id);
-                });
-                nodo.querySelector('.btn-connect').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    conectarTarea(tarea.id);
-                });
-                nodo.querySelector('.btn-delete').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    eliminarTarea(tarea.id);
-                });
+
+                // Asignar eventos a los botones existentes
+                const btnEdit = nodo.querySelector('.btn-edit');
+                if (btnEdit) {
+                    btnEdit.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        editarTarea(tarea.id);
+                    });
+                }
+                const btnConnect = nodo.querySelector('.btn-connect');
+                if (btnConnect) {
+                    btnConnect.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        conectarTarea(tarea.id);
+                    });
+                }
+                const btnDelete = nodo.querySelector('.btn-delete');
+                if (btnDelete) {
+                    btnDelete.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        eliminarTarea(tarea.id);
+                    });
+                }
+
                 canvas.appendChild(nodo);
             });
         }
