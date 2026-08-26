@@ -387,8 +387,9 @@
         }
         .task-node.tipo-texto {
             background: transparent;
-            border: 2px solid rgba(128,128,128,0.4);
+            border: none;
             box-shadow: none;
+            cursor: text; /* Cambiamos cursor para indicar que es texto */
         }
         .task-node.tipo-texto .node-title {
             color: #444;
@@ -856,13 +857,17 @@
                 nodo.style.top = tarea.y + 'px';
                 nodo.style.borderColor = tarea.color;
                 nodo.dataset.id = tarea.id;
+
+                // Si es tipo Texto, no incluir el punto de color
+                const colorDotHTML = tarea.tipo === 'Texto' ? '' : `<span class="color-dot" style="background:${tarea.color}"></span>`;
+
                 nodo.innerHTML = `
                     <div class="node-actions">
                         <button class="btn-node btn-edit" title="Editar"><i class="fa-solid fa-pen"></i></button>
                         <button class="btn-node btn-connect" title="Conectar a..."><i class="fa-solid fa-link"></i></button>
                         <button class="btn-node btn-delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </div>
-                    <div class="node-title"><span class="color-dot" style="background:${tarea.color}"></span>${escapeHtml(tarea.titulo)}</div>
+                    <div class="node-title">${colorDotHTML}${escapeHtml(tarea.titulo)}</div>
                     <div class="node-desc">${escapeHtml(tarea.descripcion)}</div>
                     <div class="node-actores">${escapeHtml(tarea.actores)}</div>
                 `;
