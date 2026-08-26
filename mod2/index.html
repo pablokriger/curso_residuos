@@ -308,9 +308,11 @@
             position: relative;
             width: 100%;
             height: 100%;
-            min-width: 800px; /* para que en pantallas grandes se pueda expandir */
+            min-width: 800px;
             min-height: 500px;
         }
+
+        /* Nodos */
         .task-node {
             position: absolute;
             background: white;
@@ -377,6 +379,21 @@
             color: var(--danger);
         }
 
+        /* Tipos de nodo */
+        .task-node.tipo-descripcion {
+            border-radius: 50px;
+            background: #fefefe;
+            border: 2px dashed #78A64F;
+        }
+        .task-node.tipo-texto {
+            background: transparent;
+            border: 2px solid rgba(128,128,128,0.4);
+            box-shadow: none;
+        }
+        .task-node.tipo-texto .node-title {
+            color: #444;
+        }
+
         /* Modal para crear/editar tarea */
         .color-picker {
             display: flex;
@@ -424,7 +441,6 @@
             .flow-container { min-height: 400px; }
         }
 
-        /* Ocultar secciones */
         .hidden { display: none !important; }
     </style>
 </head>
@@ -433,10 +449,10 @@
     <!-- Skip link -->
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-    <!-- Contenedor del header (skip link + navbar) -->
+    <!-- Contenedor del header -->
     <div id="header-container"></div>
 
-    <!-- ========== HERO ========== -->
+    <!-- HERO -->
     <header class="hero-page">
         <div class="container">
             <div class="etiqueta">Actividad Módulo 2</div>
@@ -445,11 +461,10 @@
         </div>
     </header>
 
-    <!-- ========== MAIN ========== -->
+    <!-- MAIN -->
     <main id="main-content">
         <div class="container">
-
-            <!-- ===== SECCIÓN LOGIN ===== -->
+            <!-- LOGIN -->
             <section id="login-section" aria-label="Iniciar sesión">
                 <div class="login-card">
                     <h2><i class="fa-solid fa-lock"></i> Acceso a la actividad</h2>
@@ -469,18 +484,17 @@
                 </div>
             </section>
 
-            <!-- ===== CONTENIDO ACTIVIDAD (oculto hasta login) ===== -->
+            <!-- CONTENIDO ACTIVIDAD -->
             <section id="activity-content" class="hidden">
-
-                <!-- ===== ACTIVIDAD 1: DESCRIPTIVA ===== -->
+                <!-- Actividad 1 -->
                 <div class="bloque" id="mod2_1">
                     <h2><i class="fa-solid fa-pen-to-square"></i> Actividad 1: Descriptiva</h2>
                     <div class="alerta-guardado">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                        <strong>No olvides guardar tus avances antes de salir.</strong> No es posible recuperar ediciones anteriores. Asegurate de estar conforme con los cambios antes de guardar.
+                        <strong>No olvides guardar tus avances antes de salir.</strong> No es posible recuperar ediciones anteriores.
                     </div>
                     <p class="mb-4">
-                        En esta primera actividad te proponemos analizar la situación actual de la gestión de residuos en tu localidad, espacio u organización. Para ello, vas a identificar qué tipos de residuos considerás necesario gestionar, estimar qué volumen se genera y con qué frecuencia, formular con claridad cuál es el problema que observás actualmente y que los actores involucrados deberían abordar, y finalmente proponer de qué manera sería posible mejorar, transformar o gestionar esa situación. La actividad busca que puedas pasar de una observación concreta del territorio a la formulación de un problema y una posible estrategia de intervención, que luego podrás desarrollar en las actividades siguientes.
+                        En esta primera actividad te proponemos analizar la situación actual de la gestión de residuos en tu localidad, espacio u organización...
                     </p>
 
                     <div class="pregunta-item">
@@ -488,19 +502,16 @@
                         <textarea class="form-control" id="pregunta1" rows="4" placeholder="Describí los tipos de residuos..."></textarea>
                         <div class="ejemplo">Ej: residuos sólidos urbanos, plásticos, botellas, residuos peligrosos, hospitalarios, etc.</div>
                     </div>
-
                     <div class="pregunta-item">
                         <label for="pregunta2">2. ¿De qué volumen estamos hablando? ¿Y cada cuánto tiempo?</label>
                         <textarea class="form-control" id="pregunta2" rows="4" placeholder="Estimá cantidades y frecuencia..."></textarea>
                         <div class="ejemplo">Ej: 1500 kg por día, 2 toneladas semanales, 10 m³ mensuales.</div>
                     </div>
-
                     <div class="pregunta-item">
                         <label for="pregunta3">3. Formulá el problema que observás en la gestión de residuos actual y que los actores asociados deberían enfrentar.</label>
                         <textarea class="form-control" id="pregunta3" rows="4" placeholder="Describí el problema central..."></textarea>
                         <div class="ejemplo">Ej: Falta de equipamiento y coordinación entre áreas municipales, ineficiencia en recolección, falta de financiamiento, etc.</div>
                     </div>
-
                     <div class="pregunta-item">
                         <label for="pregunta4">4. ¿De qué manera creés que sería factible mejorar, transformar o gestionar esa situación?</label>
                         <textarea class="form-control" id="pregunta4" rows="4" placeholder="Proponé una estrategia..."></textarea>
@@ -516,7 +527,7 @@
                 <!-- Separador -->
                 <div class="section-divider"><span>Actividad 2</span></div>
 
-                <!-- ===== ACTIVIDAD 2: PROPOSITIVA - DIAGRAMA DE FLUJO ===== -->
+                <!-- Actividad 2 -->
                 <div class="bloque" id="mod2_2">
                     <h2><i class="fa-solid fa-diagram-project"></i> Actividad 2: Propositiva - Diagrama de Flujo</h2>
                     <div class="alerta-guardado">
@@ -524,10 +535,9 @@
                         <strong>Guardá periódicamente.</strong> Los cambios no se guardan automáticamente.
                     </div>
                     <p>
-                        En esta actividad vas a diseñar un diagrama de flujo que represente la solución propuesta para abordar el problema de gestión de residuos planteado en la actividad anterior. Dentro de un mismo marco de trabajo podrás crear y editar “globos” para incorporar todas las tareas, acciones o etapas necesarias, asignarles diferentes colores y conectarlas entre sí según la lógica que consideres más adecuada. La idea es construir visualmente una secuencia de trabajo que permita comprender cómo se llevaría adelante la solución, desde el inicio hasta su implementación.
+                        En esta actividad vas a diseñar un diagrama de flujo que represente la solución propuesta para abordar el problema de gestión de residuos planteado en la actividad anterior...
                     </p>
 
-                    <!-- Barra de herramientas -->
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <button class="btn btn-guardar" id="btn-add-task">
                             <i class="fa-solid fa-plus"></i> Agregar tarea
@@ -541,7 +551,6 @@
                     </div>
                     <div id="flow-message"></div>
 
-                    <!-- Contenedor del diagrama -->
                     <div class="flow-container" id="flow-container">
                         <div class="flow-canvas" id="flow-canvas">
                             <svg class="flow-svg" id="flow-svg">
@@ -551,20 +560,17 @@
                                     </marker>
                                 </defs>
                             </svg>
-                            <!-- Nodos se agregarán aquí -->
                         </div>
                     </div>
                 </div>
-
-            </section><!-- /activity-content -->
-
+            </section>
         </div>
     </main>
 
     <!-- Contenedor del footer -->
     <div id="footer-container"></div>
 
-    <!-- ========== MODAL PARA CREAR/EDITAR TAREA ========== -->
+    <!-- MODAL TAREA -->
     <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 16px;">
@@ -573,6 +579,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="task-tipo" class="form-label">Tipo de elemento</label>
+                        <select class="form-select" id="task-tipo">
+                            <option value="Tarea" selected>Tarea</option>
+                            <option value="Descripción">Descripción</option>
+                            <option value="Texto">Texto</option>
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label for="task-title" class="form-label">Título</label>
                         <input type="text" class="form-control" id="task-title" placeholder="Nombre de la tarea" required>
@@ -587,9 +601,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Color</label>
-                        <div class="color-picker" id="color-picker">
-                            <!-- Opciones generadas por JS -->
-                        </div>
+                        <div class="color-picker" id="color-picker"></div>
                     </div>
                     <input type="hidden" id="task-id" value="">
                 </div>
@@ -605,11 +617,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // ========== CONFIGURACIÓN ==========
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyazZ9zb0EJAOdl8D0HPKpSpTpea_sFN8l90ZAyDhPRRb0fkyYsDa6DVAfzTtrcSwc/exec';
-        let usuarioActual = null; // { correo, dni }
+        let usuarioActual = null;
 
-        // ========== CARGA HEADER Y FOOTER ==========
         async function cargarElementos() {
             try {
                 const respuesta = await fetch('../elements/index.html');
@@ -626,7 +636,6 @@
                 if (footer) {
                     document.getElementById('footer-container').innerHTML = footer.outerHTML;
                 }
-                // Inicializar dropdowns
                 document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(toggle => {
                     new bootstrap.Dropdown(toggle);
                 });
@@ -635,7 +644,6 @@
             }
         }
 
-        // ========== UTILIDADES ==========
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -649,7 +657,7 @@
             setTimeout(() => { el.innerHTML = ''; }, 4000);
         }
 
-        // ========== LOGIN ==========
+        // Login
         document.getElementById('btn-login').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const dni = document.getElementById('login-password').value.trim();
@@ -657,24 +665,14 @@
                 mostrarMensaje('login-message', 'Por favor completá ambos campos.', 'danger');
                 return;
             }
-            // Llamada al Apps Script para verificar credenciales
             try {
-                const body = new URLSearchParams({
-                    action: 'login',
-                    correo: email,
-                    dni: dni
-                });
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
+                const body = new URLSearchParams({ action: 'login', correo: email, dni });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const data = await resp.json();
                 if (data.success) {
-                    usuarioActual = { correo: email, dni: dni };
+                    usuarioActual = { correo: email, dni };
                     document.getElementById('login-section').classList.add('hidden');
                     document.getElementById('activity-content').classList.remove('hidden');
-                    // Cargar datos existentes
                     cargarActividad1();
                     cargarActividad2();
                 } else {
@@ -686,20 +684,12 @@
             }
         });
 
-        // ========== ACTIVIDAD 1: DESCRIPTIVA ==========
+        // Actividad 1
         async function cargarActividad1() {
             if (!usuarioActual) return;
             try {
-                const body = new URLSearchParams({
-                    action: 'getMod1',
-                    correo: usuarioActual.correo,
-                    dni: usuarioActual.dni
-                });
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
+                const body = new URLSearchParams({ action: 'getMod1', correo: usuarioActual.correo, dni: usuarioActual.dni });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const data = await resp.json();
                 if (data.success && data.data) {
                     document.getElementById('pregunta1').value = data.data.pregunta1 || '';
@@ -732,11 +722,7 @@
                 pregunta4: p4
             });
             try {
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const data = await resp.json();
                 if (data.success) {
                     mostrarMensaje('mod1-message', 'Actividad 1 guardada correctamente.', 'success');
@@ -749,12 +735,9 @@
             }
         });
 
-        // ========== ACTIVIDAD 2: DIAGRAMA DE FLUJO ==========
-        const coloresDisponibles = [
-            '#2B4C6F', '#78A64F', '#e74c3c', '#f39c12', '#9b59b6',
-            '#1abc9c', '#e67e22', '#3498db', '#34495e', '#95a5a6'
-        ];
-        let tareas = []; // Cada tarea: { id, titulo, descripcion, actores, color, x, y, conexionesSalientes: [ids] }
+        // Actividad 2
+        const coloresDisponibles = ['#2B4C6F', '#78A64F', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#3498db', '#34495e', '#95a5a6'];
+        let tareas = [];
         let proximoId = 1;
         let tareaEditando = null;
         let nodoArrastrando = null;
@@ -786,47 +769,47 @@
             opciones.forEach((op, i) => op.classList.toggle('active', i === 0));
         }
 
-        // Abrir modal para nueva tarea
         document.getElementById('btn-add-task').addEventListener('click', () => {
             tareaEditando = null;
             document.getElementById('taskModalLabel').textContent = 'Nueva tarea';
             document.getElementById('task-title').value = '';
             document.getElementById('task-desc').value = '';
             document.getElementById('task-actores').value = '';
+            document.getElementById('task-tipo').value = 'Tarea';
             resetearColorPicker();
             document.getElementById('task-id').value = '';
             const modal = new bootstrap.Modal(document.getElementById('taskModal'));
             modal.show();
         });
 
-        // Guardar tarea desde el modal
         document.getElementById('btn-save-task').addEventListener('click', () => {
             const titulo = document.getElementById('task-title').value.trim();
             const desc = document.getElementById('task-desc').value.trim();
             const actores = document.getElementById('task-actores').value.trim();
             const color = getColorSeleccionado();
+            const tipo = document.getElementById('task-tipo').value;
             if (!titulo) {
                 alert('El título es obligatorio.');
                 return;
             }
             const taskId = document.getElementById('task-id').value;
             if (taskId) {
-                // Editar tarea existente
                 const tarea = tareas.find(t => t.id === parseInt(taskId));
                 if (tarea) {
                     tarea.titulo = titulo;
                     tarea.descripcion = desc;
                     tarea.actores = actores;
                     tarea.color = color;
+                    tarea.tipo = tipo;
                 }
             } else {
-                // Nueva tarea
                 const nuevaTarea = {
                     id: proximoId++,
                     titulo,
                     descripcion: desc,
                     actores,
                     color,
+                    tipo,
                     x: 50 + Math.random() * 200,
                     y: 50 + Math.random() * 200,
                     conexionesSalientes: []
@@ -837,20 +820,15 @@
             bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
         });
 
-        // Renderizado del diagrama
         function renderizarDiagrama() {
             const canvas = document.getElementById('flow-canvas');
-            // Limpiar nodos existentes (excepto SVG)
             const svg = document.getElementById('flow-svg');
             canvas.querySelectorAll('.task-node').forEach(n => n.remove());
-            // También limpiar líneas SVG
             while (svg.firstChild) svg.removeChild(svg.firstChild);
-            // Recrear defs para arrowhead
             const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
             defs.innerHTML = `<marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrowhead" /></marker>`;
             svg.appendChild(defs);
 
-            // Dibujar conexiones primero (para que queden debajo)
             tareas.forEach(tarea => {
                 tarea.conexionesSalientes.forEach(idDestino => {
                     const destino = tareas.find(t => t.id === idDestino);
@@ -869,10 +847,11 @@
                 });
             });
 
-            // Crear nodos
             tareas.forEach(tarea => {
                 const nodo = document.createElement('div');
                 nodo.className = 'task-node';
+                if (tarea.tipo === 'Descripción') nodo.classList.add('tipo-descripcion');
+                if (tarea.tipo === 'Texto') nodo.classList.add('tipo-texto');
                 nodo.style.left = tarea.x + 'px';
                 nodo.style.top = tarea.y + 'px';
                 nodo.style.borderColor = tarea.color;
@@ -905,13 +884,11 @@
             });
         }
 
-        // Funciones de arrastre
         function iniciarArrastre(e, id) {
             const nodo = document.querySelector(`.task-node[data-id="${id}"]`);
             if (!nodo) return;
             nodoArrastrando = id;
             const rect = nodo.getBoundingClientRect();
-            const canvasRect = document.getElementById('flow-canvas').getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
             document.addEventListener('mousemove', moverArrastre);
@@ -924,7 +901,6 @@
             if (!nodo) return;
             nodoArrastrando = id;
             const rect = nodo.getBoundingClientRect();
-            const canvasRect = document.getElementById('flow-canvas').getBoundingClientRect();
             offsetX = touch.clientX - rect.left;
             offsetY = touch.clientY - rect.top;
             document.addEventListener('touchmove', moverArrastreTouch, { passive: false });
@@ -945,9 +921,7 @@
             tarea.y = nuevoY;
             renderizarDiagrama();
             const nodo = document.querySelector(`.task-node[data-id="${nodoArrastrando}"]`);
-            if (nodo) {
-                nodo.classList.add('dragging');
-            }
+            if (nodo) nodo.classList.add('dragging');
         }
         function moverArrastreTouch(e) {
             e.preventDefault();
@@ -967,7 +941,6 @@
             document.querySelectorAll('.task-node.dragging').forEach(n => n.classList.remove('dragging'));
         }
 
-        // Editar tarea
         function editarTarea(id) {
             const tarea = tareas.find(t => t.id === id);
             if (!tarea) return;
@@ -976,6 +949,7 @@
             document.getElementById('task-title').value = tarea.titulo;
             document.getElementById('task-desc').value = tarea.descripcion;
             document.getElementById('task-actores').value = tarea.actores;
+            document.getElementById('task-tipo').value = tarea.tipo || 'Tarea';
             document.getElementById('task-id').value = tarea.id;
             const picker = document.querySelectorAll('#color-picker .color-option');
             picker.forEach(op => {
@@ -985,7 +959,6 @@
             modal.show();
         }
 
-        // Eliminar tarea
         function eliminarTarea(id) {
             if (!confirm('¿Eliminar esta tarea?')) return;
             tareas = tareas.filter(t => t.id !== id);
@@ -995,7 +968,6 @@
             renderizarDiagrama();
         }
 
-        // Conectar tarea (pide ID destino)
         function conectarTarea(idOrigen) {
             const idsDisponibles = tareas.filter(t => t.id !== idOrigen).map(t => t.id);
             if (idsDisponibles.length === 0) {
@@ -1016,7 +988,6 @@
             renderizarDiagrama();
         }
 
-        // Guardar diagrama en hoja Mod2_2
         document.getElementById('btn-save-flow').addEventListener('click', async () => {
             if (!usuarioActual) return;
             if (tareas.length === 0) {
@@ -1029,6 +1000,7 @@
                 descripcion: t.descripcion,
                 actores: t.actores,
                 color: t.color,
+                tipo: t.tipo || 'Tarea',
                 x: t.x,
                 y: t.y,
                 conexiones: t.conexionesSalientes
@@ -1040,11 +1012,7 @@
                 data: JSON.stringify(data)
             });
             try {
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const result = await resp.json();
                 if (result.success) {
                     mostrarMensaje('flow-message', 'Diagrama guardado correctamente.', 'success');
@@ -1057,20 +1025,11 @@
             }
         });
 
-        // Cargar diagrama existente
         async function cargarActividad2() {
             if (!usuarioActual) return;
             try {
-                const body = new URLSearchParams({
-                    action: 'getMod2',
-                    correo: usuarioActual.correo,
-                    dni: usuarioActual.dni
-                });
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
+                const body = new URLSearchParams({ action: 'getMod2', correo: usuarioActual.correo, dni: usuarioActual.dni });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const result = await resp.json();
                 if (result.success && result.data) {
                     tareas = result.data.map(t => ({
@@ -1079,6 +1038,7 @@
                         descripcion: t.descripcion,
                         actores: t.actores,
                         color: t.color,
+                        tipo: t.tipo || 'Tarea',
                         x: t.x,
                         y: t.y,
                         conexionesSalientes: t.conexiones || []
@@ -1091,7 +1051,6 @@
             }
         }
 
-        // Resetear diagrama (solo visual, no guarda)
         document.getElementById('btn-reset-flow').addEventListener('click', () => {
             if (!confirm('¿Seguro que querés limpiar el diagrama sin guardar?')) return;
             tareas = [];
@@ -1099,7 +1058,6 @@
             renderizarDiagrama();
         });
 
-        // ========== INICIALIZACIÓN ==========
         document.addEventListener('DOMContentLoaded', () => {
             cargarElementos();
             inicializarColorPicker();
