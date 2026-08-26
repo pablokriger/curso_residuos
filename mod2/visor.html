@@ -20,7 +20,7 @@
             --primary: #2B4C6F;
             --accent: #78A64F;
             --white: #ffffff;
-            --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --shadow: 0 8px 20px rgba(0,0,0,0.08);
             --radius: 16px;
             --transition: 0.3s ease;
             --danger: #e74c3c;
@@ -289,16 +289,100 @@
             font-weight: 700;
         }
 
-        .task-item {
-            border-left: 4px solid var(--accent);
-            background: #fff;
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        /* ====== DIAGRAMA DE FLUJO (VISOR) ====== */
+        .flow-container {
+            background: #faf9f4;
+            border: 2px dashed #ccc;
+            border-radius: var(--radius);
+            min-height: 400px;
+            position: relative;
+            overflow: auto;
+            padding: 20px;
+            margin-top: 1rem;
         }
-
+        .flow-canvas {
+            position: relative;
+            min-width: 800px;
+            min-height: 400px;
+        }
+        .task-node {
+            position: absolute;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 10px 12px;
+            min-width: 150px;
+            max-width: 220px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: grab;
+            user-select: none;
+            transition: box-shadow 0.2s;
+        }
+        .task-node:active {
+            cursor: grabbing;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .task-node .node-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .task-node .node-desc {
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        .task-node .node-actores {
+            font-size: 0.75rem;
+            color: #777;
+            font-style: italic;
+        }
+        .task-node .color-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        /* Tipos */
+        .task-node.tipo-descripcion {
+            border-radius: 50px;
+            background: #fefefe;
+            border: 2px dashed #78A64F;
+        }
+        .task-node.tipo-texto {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            cursor: text;
+        }
+        .task-node.tipo-texto .node-title {
+            color: #444;
+            font-weight: 400;
+        }
+        .flow-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .flow-svg line {
+            stroke: #888;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
         .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .hero-page h1 { font-size: 1.8rem; }
+            .bloque { padding: 1.5rem; }
+            .flow-container { min-height: 300px; }
+        }
     </style>
 </head>
 <body>
@@ -342,7 +426,7 @@
                 </div>
             </section>
 
-            <!-- CONTENIDO VISOR (oculto hasta login) -->
+            <!-- CONTENIDO VISOR -->
             <section id="visor-content" class="hidden">
                 <div class="bloque">
                     <h2><i class="fa-solid fa-users"></i> Usuarios con actividad</h2>
@@ -350,9 +434,7 @@
                         <label for="search-nick" class="form-label">Buscar por nickname</label>
                         <input type="text" class="form-control" id="search-nick" placeholder="Escribí el nick...">
                     </div>
-                    <div id="lista-usuarios" class="row g-3">
-                        <!-- Se llenará dinámicamente -->
-                    </div>
+                    <div id="lista-usuarios" class="row g-3"></div>
                     <div id="lista-spinner" class="spinner-overlay hidden">
                         <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                         <span>Cargando usuarios...</span>
@@ -361,9 +443,7 @@
 
                 <div class="bloque hidden" id="detalle-usuario">
                     <h2><i class="fa-solid fa-file-lines"></i> Respuestas de <span id="nombre-usuario"></span></h2>
-                    <div id="respuestas-contenido">
-                        <!-- Aquí se inyectarán las respuestas -->
-                    </div>
+                    <div id="respuestas-contenido"></div>
                 </div>
             </section>
 
@@ -376,8 +456,8 @@
 
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyo9QSdBhMUU5FoVh00WyFc-2hBxLfchMGzkIzJsF6mzRaRp2Ing_AaXcY72CnS0D4/exec';
-        let visorActual = null; // { correo, dni }
-        let usuariosData = []; // Array de objetos con nick y respuestas
+        let visorActual = null;
+        let usuariosData = [];
 
         async function cargarElementos() {
             try {
@@ -416,7 +496,6 @@
             setTimeout(() => { el.innerHTML = ''; }, 4000);
         }
 
-        // Login para visor
         document.getElementById('btn-login').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const dni = document.getElementById('login-password').value.trim();
@@ -447,7 +526,6 @@
             }
         });
 
-        // Cargar lista de usuarios con actividad
         async function cargarListaUsuarios() {
             document.getElementById('lista-spinner').classList.remove('hidden');
             try {
@@ -468,13 +546,15 @@
         }
 
         function renderizarListaUsuarios(usuarios) {
+            // Ordenar alfabéticamente
+            const ordenados = [...usuarios].sort((a, b) => a.nick.localeCompare(b.nick));
             const contenedor = document.getElementById('lista-usuarios');
             contenedor.innerHTML = '';
-            if (usuarios.length === 0) {
+            if (ordenados.length === 0) {
                 contenedor.innerHTML = '<p class="text-muted">No hay usuarios con actividad todavía.</p>';
                 return;
             }
-            usuarios.forEach(u => {
+            ordenados.forEach(u => {
                 const div = document.createElement('div');
                 div.className = 'col-md-4 col-sm-6';
                 div.innerHTML = `
@@ -492,7 +572,6 @@
             });
         }
 
-        // Búsqueda por nick
         document.getElementById('search-nick').addEventListener('input', (e) => {
             const filtro = e.target.value.trim().toLowerCase();
             const filtrados = usuariosData.filter(u => u.nick.toLowerCase().includes(filtro));
@@ -528,25 +607,158 @@
                 contenedor.appendChild(divMod1);
             }
 
-            // Actividad 2
+            // Actividad 2: diagrama interactivo (solo lectura)
             if (usuario.mod2 && usuario.mod2.length > 0) {
                 const divMod2 = document.createElement('div');
                 divMod2.className = 'answer-box';
                 divMod2.innerHTML = `<h5><i class="fa-solid fa-diagram-project me-2"></i>Actividad 2 (Diagrama)</h5>`;
+
+                // Crear contenedor del diagrama
+                const flowContainer = document.createElement('div');
+                flowContainer.className = 'flow-container';
+                const flowCanvas = document.createElement('div');
+                flowCanvas.className = 'flow-canvas';
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'flow-svg');
+                svg.innerHTML = `<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="arrowhead" /></marker></defs>`;
+                flowCanvas.appendChild(svg);
+                flowContainer.appendChild(flowCanvas);
+                divMod2.appendChild(flowContainer);
+
+                // Dibujar conexiones
                 usuario.mod2.forEach(tarea => {
-                    const tipoIcono = tarea.tipo === 'Texto' ? 'fa-font' : tarea.tipo === 'Descripción' ? 'fa-cloud' : 'fa-tasks';
-                    divMod2.innerHTML += `
-                        <div class="task-item">
-                            <div><i class="fa-solid ${tipoIcono} me-2 text-primary"></i><strong>${escapeHtml(tarea.titulo)}</strong></div>
-                            <div class="small">${escapeHtml(tarea.descripcion || '')}</div>
-                            <div class="small text-muted">${escapeHtml(tarea.actores || '')}</div>
-                        </div>
-                    `;
+                    (tarea.conexiones || []).forEach(idDestino => {
+                        const destino = usuario.mod2.find(t => t.id === idDestino);
+                        if (!destino) return;
+                        const x1 = tarea.x + 100;
+                        const y1 = tarea.y + 40;
+                        const x2 = destino.x + 100;
+                        const y2 = destino.y + 40;
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', x1);
+                        line.setAttribute('y1', y1);
+                        line.setAttribute('x2', x2);
+                        line.setAttribute('y2', y2);
+                        line.setAttribute('marker-end', 'url(#arrowhead)');
+                        svg.appendChild(line);
+                    });
                 });
+
+                // Crear nodos
+                usuario.mod2.forEach(tarea => {
+                    const nodo = document.createElement('div');
+                    nodo.className = 'task-node';
+                    if (tarea.tipo === 'Descripción') nodo.classList.add('tipo-descripcion');
+                    if (tarea.tipo === 'Texto') nodo.classList.add('tipo-texto');
+                    nodo.style.left = tarea.x + 'px';
+                    nodo.style.top = tarea.y + 'px';
+                    nodo.style.borderColor = tarea.color;
+                    nodo.dataset.id = tarea.id;
+
+                    const colorDotHTML = tarea.tipo === 'Texto' ? '' : `<span class="color-dot" style="background:${tarea.color}"></span>`;
+
+                    nodo.innerHTML = `
+                        <div class="node-title">${colorDotHTML}${escapeHtml(tarea.titulo)}</div>
+                        <div class="node-desc">${escapeHtml(tarea.descripcion || '')}</div>
+                        <div class="node-actores">${escapeHtml(tarea.actores || '')}</div>
+                    `;
+
+                    // Permitir arrastre (sin guardar)
+                    nodo.addEventListener('mousedown', (e) => iniciarArrastreVisor(e, tarea, flowCanvas, usuario.mod2));
+                    nodo.addEventListener('touchstart', (e) => iniciarArrastreVisorTouch(e, tarea, flowCanvas, usuario.mod2), { passive: false });
+
+                    flowCanvas.appendChild(nodo);
+                });
+
                 contenedor.appendChild(divMod2);
             }
 
             document.getElementById('detalle-usuario').classList.remove('hidden');
+        }
+
+        // Funciones de arrastre para el visor (solo visual, sin guardar)
+        function iniciarArrastreVisor(e, tarea, canvas, listaTareas) {
+            e.preventDefault();
+            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
+            if (!nodo) return;
+            const rect = nodo.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+
+            function mover(e) {
+                const nuevoX = e.clientX - canvasRect.left - offsetX;
+                const nuevoY = e.clientY - canvasRect.top - offsetY;
+                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
+                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
+                nodo.style.left = tarea.x + 'px';
+                nodo.style.top = tarea.y + 'px';
+                // Actualizar conexiones
+                actualizarConexionesVisor(canvas, listaTareas);
+            }
+
+            function terminar() {
+                document.removeEventListener('mousemove', mover);
+                document.removeEventListener('mouseup', terminar);
+            }
+
+            document.addEventListener('mousemove', mover);
+            document.addEventListener('mouseup', terminar);
+        }
+
+        function iniciarArrastreVisorTouch(e, tarea, canvas, listaTareas) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
+            if (!nodo) return;
+            const rect = nodo.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const offsetX = touch.clientX - rect.left;
+            const offsetY = touch.clientY - rect.top;
+
+            function moverTouch(ev) {
+                ev.preventDefault();
+                const t = ev.touches[0];
+                const nuevoX = t.clientX - canvasRect.left - offsetX;
+                const nuevoY = t.clientY - canvasRect.top - offsetY;
+                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
+                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
+                nodo.style.left = tarea.x + 'px';
+                nodo.style.top = tarea.y + 'px';
+                actualizarConexionesVisor(canvas, listaTareas);
+            }
+
+            function terminarTouch() {
+                document.removeEventListener('touchmove', moverTouch);
+                document.removeEventListener('touchend', terminarTouch);
+            }
+
+            document.addEventListener('touchmove', moverTouch, { passive: false });
+            document.addEventListener('touchend', terminarTouch);
+        }
+
+        function actualizarConexionesVisor(canvas, listaTareas) {
+            const svg = canvas.querySelector('svg');
+            // Limpiar líneas anteriores (excepto defs)
+            const defs = svg.querySelector('defs');
+            svg.querySelectorAll('line').forEach(line => line.remove());
+            listaTareas.forEach(tarea => {
+                (tarea.conexiones || []).forEach(idDestino => {
+                    const destino = listaTareas.find(t => t.id === idDestino);
+                    if (!destino) return;
+                    const x1 = tarea.x + 100;
+                    const y1 = tarea.y + 40;
+                    const x2 = destino.x + 100;
+                    const y2 = destino.y + 40;
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
+                    svg.appendChild(line);
+                });
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
