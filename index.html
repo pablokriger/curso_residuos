@@ -1,4 +1,4 @@
-# Página de bienvenida — Curso de Gestión de Residuos
+# Página inicial — Actividades especiales del curso
 
 ```html
 <!DOCTYPE html>
@@ -7,9 +7,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Gestión de Residuos</title>
+    <title>Actividades especiales | Gestión de Residuos</title>
 
     <style>
+        :root {
+            --fondo: #F0F0E6;
+            --texto: #3C3C3C;
+            --azul: #2B4C6F;
+            --verde: #78A64F;
+            --blanco: #FFFFFF;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -18,86 +26,209 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7f5;
-            color: #26352b;
-            line-height: 1.6;
+            background: var(--fondo);
+            color: var(--texto);
+            line-height: 1.7;
         }
 
+        /* =========================
+           ENCABEZADO
+        ========================= */
+
         header {
-            background: linear-gradient(135deg, #2f6845, #4f8c5d);
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(43, 76, 111, 0.98),
+                    rgba(43, 76, 111, 0.90)
+                );
             color: white;
-            padding: 80px 20px;
+            padding: 70px 20px 65px;
             text-align: center;
         }
 
+        .etiqueta {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 7px 16px;
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
         header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
+            font-size: 2.7rem;
+            line-height: 1.2;
+            margin-bottom: 18px;
         }
 
         header p {
-            font-size: 1.25rem;
             max-width: 800px;
             margin: auto;
+            font-size: 1.15rem;
+            opacity: 0.95;
         }
 
+        /* =========================
+           CONTENIDO PRINCIPAL
+        ========================= */
+
         main {
-            max-width: 1000px;
+            max-width: 1050px;
             margin: 50px auto;
             padding: 0 20px;
         }
 
-        .bienvenida {
-            background: white;
+        .bloque {
+            background: var(--blanco);
             padding: 40px;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            box-shadow: 0 5px 18px rgba(60, 60, 60, 0.08);
         }
 
-        .bienvenida h2 {
-            color: #2f6845;
-            margin-bottom: 20px;
+        .bloque h2 {
+            color: var(--azul);
+            margin-bottom: 18px;
+            font-size: 1.65rem;
         }
 
-        .objetivos {
+        .bloque p {
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           AVISO ESPECIAL
+        ========================= */
+
+        .aviso {
+            border-left: 6px solid var(--verde);
+            background: #f7f8f0;
+            padding: 24px 28px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .aviso strong {
+            color: var(--azul);
+        }
+
+        /* =========================
+           ACTIVIDADES
+        ========================= */
+
+        .actividades {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
             margin-top: 30px;
         }
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        .actividad {
+            position: relative;
+            background: var(--blanco);
+            border-radius: 14px;
+            padding: 28px;
+            border-top: 5px solid var(--verde);
+            box-shadow: 0 4px 15px rgba(60, 60, 60, 0.07);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .card h3 {
-            color: #2f6845;
-            margin-bottom: 10px;
+        .actividad:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 22px rgba(60, 60, 60, 0.12);
         }
+
+        .numero {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--azul);
+            color: white;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .actividad h3 {
+            color: var(--azul);
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+        }
+
+        .actividad p {
+            font-size: 0.95rem;
+        }
+
+        /* =========================
+           BOTONES
+        ========================= */
+
+        .boton {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 18px;
+            background: var(--azul);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .boton:hover {
+            background: var(--verde);
+        }
+
+        /* =========================
+           PIE
+        ========================= */
 
         footer {
-            text-align: center;
-            padding: 30px 20px;
-            background: #26352b;
+            background: var(--azul);
             color: white;
+            text-align: center;
+            padding: 32px 20px;
             margin-top: 60px;
         }
 
+        footer p {
+            margin: 4px 0;
+        }
+
+        footer .pequeno {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
         @media (max-width: 600px) {
+
+            header {
+                padding: 55px 20px;
+            }
+
             header h1 {
-                font-size: 2rem;
+                font-size: 2.1rem;
             }
 
             header p {
                 font-size: 1rem;
             }
 
-            .bienvenida {
-                padding: 25px;
+            .bloque {
+                padding: 28px 24px;
+            }
+
+            .bloque h2 {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -106,87 +237,193 @@
 <body>
 
     <header>
-        <h1>Gestión de Residuos</h1>
+
+        <div class="etiqueta">
+            Espacio complementario
+        </div>
+
+        <h1>Actividades especiales</h1>
+
         <p>
             Curso de Gestión de Residuos para comunas, municipios y zonas rurales
         </p>
+
     </header>
+
 
     <main>
 
-        <section class="bienvenida">
-            <h2>Bienvenidos al curso</h2>
+        <!-- INTRODUCCIÓN -->
+
+        <section class="bloque">
+
+            <h2>Bienvenidos</h2>
 
             <p>
-                Les damos la bienvenida a este espacio de formación sobre
-                <strong>gestión de residuos</strong>, destinado a fortalecer
-                conocimientos, herramientas y capacidades para abordar esta
-                problemática en nuestros territorios.
+                Este espacio fue creado como complemento del aula virtual del curso.
+                Aquí encontrarán actividades, ejercicios y recursos especialmente
+                diseñados para trabajar con herramientas que requieren
+                funcionalidades que Moodle no siempre permite desarrollar.
             </p>
-
-            <br>
 
             <p>
-                A lo largo del curso vamos a trabajar sobre los principales
-                desafíos vinculados con la generación, gestión, tratamiento y
-                disposición de los residuos, considerando las características
-                particulares de las comunas, municipios y zonas rurales.
+                Por eso, esta página no reemplaza al aula virtual:
+                <strong>la complementa.</strong>
             </p>
 
-            <br>
+            <div class="aviso">
 
-            <p>
-                El objetivo es incorporar herramientas que permitan comprender
-                mejor la problemática y desarrollar estrategias de gestión
-                ambientalmente adecuadas, sostenibles y adaptadas a cada territorio.
-            </p>
-        </section>
+                <strong>¿Cómo funciona?</strong>
 
-        <section class="bienvenida">
-            <h2>¿Qué vamos a trabajar?</h2>
-
-            <div class="objetivos">
-
-                <div class="card">
-                    <h3>♻️ Gestión integral</h3>
-                    <p>
-                        Conceptos fundamentales para comprender el ciclo de los
-                        residuos y las diferentes alternativas de gestión.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <h3>🏘️ Gestión local</h3>
-                    <p>
-                        Herramientas y estrategias aplicables a municipios,
-                        comunas y comunidades rurales.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <h3>🌱 Ambiente</h3>
-                    <p>
-                        Impactos ambientales asociados a una gestión inadecuada
-                        y posibilidades de prevención y reducción.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <h3>📊 Planificación</h3>
-                    <p>
-                        Información y criterios para mejorar la toma de decisiones
-                        y la planificación de políticas públicas.
-                    </p>
-                </div>
+                <p>
+                    Las consignas y materiales de cada actividad se indicarán
+                    desde el aula de Moodle. Cuando una actividad requiera utilizar
+                    este sitio, encontrarán aquí el acceso correspondiente.
+                </p>
 
             </div>
+
+        </section>
+
+
+        <!-- ACTIVIDADES -->
+
+        <section class="bloque">
+
+            <h2>Actividades del curso</h2>
+
+            <p>
+                A medida que avancemos en los módulos se habilitarán diferentes
+                actividades especiales.
+            </p>
+
+            <div class="actividades">
+
+                <article class="actividad">
+
+                    <div class="numero">1</div>
+
+                    <h3>Actividad del Módulo 1</h3>
+
+                    <p>
+                        Espacio destinado a la primera actividad práctica
+                        complementaria del curso.
+                    </p>
+
+                    <a href="#" class="boton">
+                        Acceder
+                    </a>
+
+                </article>
+
+
+                <article class="actividad">
+
+                    <div class="numero">2</div>
+
+                    <h3>Actividad del Módulo 2</h3>
+
+                    <p>
+                        Herramienta interactiva para desarrollar el ejercicio
+                        correspondiente al segundo módulo.
+                    </p>
+
+                    <a href="#" class="boton">
+                        Acceder
+                    </a>
+
+                </article>
+
+
+                <article class="actividad">
+
+                    <div class="numero">3</div>
+
+                    <h3>Actividad del Módulo 3</h3>
+
+                    <p>
+                        Actividad práctica complementaria vinculada con los
+                        contenidos trabajados en el módulo.
+                    </p>
+
+                    <a href="#" class="boton">
+                        Acceder
+                    </a>
+
+                </article>
+
+
+                <article class="actividad">
+
+                    <div class="numero">4</div>
+
+                    <h3>Actividad del Módulo 4</h3>
+
+                    <p>
+                        Espacio para ejercicios especiales y herramientas
+                        complementarias.
+                    </p>
+
+                    <a href="#" class="boton">
+                        Acceder
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACLARACIÓN -->
+
+        <section class="bloque">
+
+            <h2>Una extensión del aula virtual</h2>
+
+            <p>
+                Moodle continúa siendo el espacio principal del curso para acceder
+                a los contenidos, participar de los encuentros y realizar las
+                actividades habituales.
+            </p>
+
+            <p>
+                Este sitio se utiliza únicamente cuando necesitamos incorporar
+                herramientas específicas, interfaces interactivas, mapas,
+                visualizaciones, simulaciones u otras funcionalidades que permitan
+                desarrollar actividades que excedan las posibilidades del aula
+                virtual.
+            </p>
+
+            <div class="aviso">
+
+                <strong>Importante:</strong>
+
+                <p>
+                    Cada actividad indicará claramente qué debe realizarse,
+                    qué información debe utilizarse y cómo entregar o registrar
+                    los resultados en el aula virtual.
+                </p>
+
+            </div>
+
         </section>
 
     </main>
 
+
     <footer>
-        <p>Curso de Gestión de Residuos</p>
-        <p>Comunas, municipios y zonas rurales</p>
+
+        <p><strong>Gestión de Residuos</strong></p>
+
+        <p>
+            Curso para comunas, municipios y zonas rurales
+        </p>
+
+        <p class="pequeno">
+            Espacio complementario de actividades
+        </p>
+
     </footer>
 
 </body>
