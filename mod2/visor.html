@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visor de Actividades | Gestión de Residuos</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #F0F0E6;
+            --text: #3C3C3C;
+            --primary: #2B4C6F;
+            --accent: #78A64F;
+            --white: #ffffff;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --transition: 0.3s ease;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            z-index: 2000;
+            border-radius: 0 0 8px 0;
+            text-decoration: none;
+        }
+        .skip-link:focus { left: 0; top: 0; }
+
+        .navbar {
+            background-color: var(--bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            padding: 0.8rem 0;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+            letter-spacing: -0.3px;
+        }
+        .navbar-brand i { font-size: 1.8rem; color: var(--accent); }
+        .nav-link {
+            font-weight: 500;
+            color: var(--text) !important;
+            transition: var(--transition);
+            padding: 0.5rem 1rem !important;
+        }
+        .nav-link:hover, .nav-link:focus {
+            color: var(--primary) !important;
+            background-color: rgba(43,76,111,0.06);
+            border-radius: 8px;
+        }
+        .dropdown-menu {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 0.5rem;
+            background: var(--white);
+        }
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            color: var(--text);
+            transition: var(--transition);
+        }
+        .dropdown-item:hover {
+            background-color: rgba(120,166,79,0.1);
+            color: var(--primary);
+        }
+        .dropdown-item.disabled-item {
+            opacity: 0.55;
+            pointer-events: none;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .badge-soon {
+            background-color: #e0e0e0;
+            color: #555;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+        .btn-campus {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.55rem 1.4rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-campus:hover {
+            background-color: #1e3a57;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(43,76,111,0.35);
+        }
+
+        .hero-page {
+            padding: 3rem 0 2rem;
+            background: linear-gradient(135deg, rgba(43,76,111,0.05), rgba(120,166,79,0.07));
+            border-bottom: 1px solid rgba(43,76,111,0.1);
+        }
+        .etiqueta {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1rem;
+        }
+        .hero-page h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        .hero-page p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .login-card {
+            max-width: 450px;
+            margin: 2rem auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+        .login-card h2 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .form-control {
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            padding: 0.7rem 1rem;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(120,166,79,0.15);
+        }
+
+        main {
+            flex: 1;
+            padding-bottom: 3rem;
+        }
+
+        .bloque {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .bloque h2 {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .bloque h2 i { color: var(--accent); }
+
+        .btn-guardar {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.6rem 1.8rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-guardar:hover {
+            background-color: #5f8a3a;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-outline-primary {
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .spinner-overlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        .spinner-border-sm {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-width: 0.2em;
+        }
+
+        .user-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+        }
+        .user-card:hover {
+            background: #f0f8ff;
+            border-color: var(--primary);
+        }
+        .user-card.active {
+            border-color: var(--accent);
+            background: #f0fff0;
+        }
+
+        .answer-box {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .answer-box h5 {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .task-item {
+            border-left: 4px solid var(--accent);
+            background: #fff;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+    <div id="header-container"></div>
+
+    <header class="hero-page">
+        <div class="container">
+            <div class="etiqueta">Visor de Actividades</div>
+            <h1>Casos completados</h1>
+            <p>Visualizá las respuestas de los participantes</p>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <div class="container">
+
+            <!-- LOGIN -->
+            <section id="login-section" aria-label="Iniciar sesión">
+                <div class="login-card">
+                    <h2><i class="fa-solid fa-eye"></i> Acceso para visualizadores</h2>
+                    <p class="text-muted mb-4">Solo los primeros 10 usuarios de la lista pueden ingresar.</p>
+                    <div class="mb-3">
+                        <label for="login-email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="login-email" placeholder="tucorreo@ejemplo.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="login-password" class="form-label">Contraseña (DNI)</label>
+                        <input type="password" class="form-control" id="login-password" placeholder="Tu DNI" required>
+                    </div>
+                    <button class="btn btn-guardar w-100" id="btn-login">
+                        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                    </button>
+                    <div id="login-spinner" class="spinner-overlay hidden">
+                        <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                        <span>Verificando credenciales...</span>
+                    </div>
+                    <div id="login-message" class="mt-3 text-center fw-semibold" style="color: var(--danger);"></div>
+                </div>
+            </section>
+
+            <!-- CONTENIDO VISOR (oculto hasta login) -->
+            <section id="visor-content" class="hidden">
+                <div class="bloque">
+                    <h2><i class="fa-solid fa-users"></i> Usuarios con actividad</h2>
+                    <div class="mb-3">
+                        <label for="search-nick" class="form-label">Buscar por nickname</label>
+                        <input type="text" class="form-control" id="search-nick" placeholder="Escribí el nick...">
+                    </div>
+                    <div id="lista-usuarios" class="row g-3">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                    <div id="lista-spinner" class="spinner-overlay hidden">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span>Cargando usuarios...</span>
+                    </div>
+                </div>
+
+                <div class="bloque hidden" id="detalle-usuario">
+                    <h2><i class="fa-solid fa-file-lines"></i> Respuestas de <span id="nombre-usuario"></span></h2>
+                    <div id="respuestas-contenido">
+                        <!-- Aquí se inyectarán las respuestas -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyo9QSdBhMUU5FoVh00WyFc-2hBxLfchMGzkIzJsF6mzRaRp2Ing_AaXcY72CnS0D4/exec';
+        let visorActual = null; // { correo, dni }
+        let usuariosData = []; // Array de objetos con nick y respuestas
+
+        async function cargarElementos() {
+            try {
+                const respuesta = await fetch('../elements/index.html');
+                if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+                const html = await respuesta.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const skipLink = doc.querySelector('.skip-link');
+                const navbar = doc.querySelector('nav');
+                const footer = doc.querySelector('footer');
+                if (skipLink && navbar) {
+                    document.getElementById('header-container').innerHTML = skipLink.outerHTML + navbar.outerHTML;
+                }
+                if (footer) {
+                    document.getElementById('footer-container').innerHTML = footer.outerHTML;
+                }
+                document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(toggle => {
+                    new bootstrap.Dropdown(toggle);
+                });
+            } catch (error) {
+                console.error('Error cargando elementos comunes:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function mostrarMensaje(id, mensaje, tipo = 'success') {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = `<div class="alert alert-${tipo} py-2 px-3" style="border-radius: 10px;">${mensaje}</div>`;
+            setTimeout(() => { el.innerHTML = ''; }, 4000);
+        }
+
+        // Login para visor
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const dni = document.getElementById('login-password').value.trim();
+            if (!email || !dni) {
+                mostrarMensaje('login-message', 'Por favor completá ambos campos.', 'danger');
+                return;
+            }
+            document.getElementById('login-spinner').classList.remove('hidden');
+            document.getElementById('btn-login').disabled = true;
+            try {
+                const body = new URLSearchParams({ action: 'loginVisor', correo: email, dni });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
+                const data = await resp.json();
+                if (data.success) {
+                    visorActual = { correo: email, dni };
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('visor-content').classList.remove('hidden');
+                    cargarListaUsuarios();
+                } else {
+                    mostrarMensaje('login-message', data.message || 'Acceso denegado.', 'danger');
+                }
+            } catch (err) {
+                console.error(err);
+                mostrarMensaje('login-message', 'Error de conexión con el servidor.', 'danger');
+            } finally {
+                document.getElementById('login-spinner').classList.add('hidden');
+                document.getElementById('btn-login').disabled = false;
+            }
+        });
+
+        // Cargar lista de usuarios con actividad
+        async function cargarListaUsuarios() {
+            document.getElementById('lista-spinner').classList.remove('hidden');
+            try {
+                const body = new URLSearchParams({ action: 'getVisorData', correo: visorActual.correo, dni: visorActual.dni });
+                const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
+                const data = await resp.json();
+                if (data.success && data.usuarios) {
+                    usuariosData = data.usuarios;
+                    renderizarListaUsuarios(usuariosData);
+                } else {
+                    console.error('Error al obtener datos:', data.message);
+                }
+            } catch (err) {
+                console.error('Error cargando lista:', err);
+            } finally {
+                document.getElementById('lista-spinner').classList.add('hidden');
+            }
+        }
+
+        function renderizarListaUsuarios(usuarios) {
+            const contenedor = document.getElementById('lista-usuarios');
+            contenedor.innerHTML = '';
+            if (usuarios.length === 0) {
+                contenedor.innerHTML = '<p class="text-muted">No hay usuarios con actividad todavía.</p>';
+                return;
+            }
+            usuarios.forEach(u => {
+                const div = document.createElement('div');
+                div.className = 'col-md-4 col-sm-6';
+                div.innerHTML = `
+                    <div class="user-card" data-nick="${u.nick}">
+                        <i class="fa-solid fa-user me-2 text-primary"></i>
+                        <strong>${escapeHtml(u.nick)}</strong>
+                    </div>
+                `;
+                div.querySelector('.user-card').addEventListener('click', () => {
+                    document.querySelectorAll('.user-card').forEach(card => card.classList.remove('active'));
+                    div.querySelector('.user-card').classList.add('active');
+                    mostrarDetalleUsuario(u.nick);
+                });
+                contenedor.appendChild(div);
+            });
+        }
+
+        // Búsqueda por nick
+        document.getElementById('search-nick').addEventListener('input', (e) => {
+            const filtro = e.target.value.trim().toLowerCase();
+            const filtrados = usuariosData.filter(u => u.nick.toLowerCase().includes(filtro));
+            renderizarListaUsuarios(filtrados);
+        });
+
+        function mostrarDetalleUsuario(nick) {
+            const usuario = usuariosData.find(u => u.nick === nick);
+            if (!usuario) return;
+            document.getElementById('nombre-usuario').textContent = usuario.nick;
+            const contenedor = document.getElementById('respuestas-contenido');
+            contenedor.innerHTML = '';
+
+            // Actividad 1
+            if (usuario.mod1) {
+                const mod1 = usuario.mod1;
+                const preguntas = [
+                    { titulo: '1. ¿Qué tipo de residuos considerás necesario gestionar?', respuesta: mod1.pregunta1 },
+                    { titulo: '2. ¿De qué volumen estamos hablando? ¿Y cada cuánto tiempo?', respuesta: mod1.pregunta2 },
+                    { titulo: '3. Formulá el problema que observás en la gestión de residuos actual.', respuesta: mod1.pregunta3 },
+                    { titulo: '4. ¿De qué manera creés que sería factible mejorar, transformar o gestionar esa situación?', respuesta: mod1.pregunta4 }
+                ];
+                const divMod1 = document.createElement('div');
+                divMod1.className = 'answer-box';
+                divMod1.innerHTML = `<h5><i class="fa-solid fa-pen-to-square me-2"></i>Actividad 1</h5>`;
+                preguntas.forEach(p => {
+                    divMod1.innerHTML += `
+                        <p><strong>${escapeHtml(p.titulo)}</strong></p>
+                        <p>${escapeHtml(p.respuesta || 'Sin respuesta')}</p>
+                        <hr>
+                    `;
+                });
+                contenedor.appendChild(divMod1);
+            }
+
+            // Actividad 2
+            if (usuario.mod2 && usuario.mod2.length > 0) {
+                const divMod2 = document.createElement('div');
+                divMod2.className = 'answer-box';
+                divMod2.innerHTML = `<h5><i class="fa-solid fa-diagram-project me-2"></i>Actividad 2 (Diagrama)</h5>`;
+                usuario.mod2.forEach(tarea => {
+                    const tipoIcono = tarea.tipo === 'Texto' ? 'fa-font' : tarea.tipo === 'Descripción' ? 'fa-cloud' : 'fa-tasks';
+                    divMod2.innerHTML += `
+                        <div class="task-item">
+                            <div><i class="fa-solid ${tipoIcono} me-2 text-primary"></i><strong>${escapeHtml(tarea.titulo)}</strong></div>
+                            <div class="small">${escapeHtml(tarea.descripcion || '')}</div>
+                            <div class="small text-muted">${escapeHtml(tarea.actores || '')}</div>
+                        </div>
+                    `;
+                });
+                contenedor.appendChild(divMod2);
+            }
+
+            document.getElementById('detalle-usuario').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarElementos();
+        });
+    </script>
+</body>
+</html>
