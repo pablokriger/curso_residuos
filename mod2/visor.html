@@ -383,7 +383,6 @@
         }
         .hidden { display: none !important; }
 
-        /* Filtros */
         .filtro-badge {
             display: inline-flex;
             align-items: center;
@@ -707,7 +706,6 @@
             document.getElementById('detalle-usuario').classList.remove('hidden');
         }
 
-        // Funciones de arrastre (igual que antes, solo visual)
         function iniciarArrastreVisor(e, tarea, canvas, listaTareas) {
             e.preventDefault();
             const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
@@ -729,6 +727,7 @@
             document.addEventListener('mousemove', mover);
             document.addEventListener('mouseup', terminar);
         }
+
         function iniciarArrastreVisorTouch(e, tarea, canvas, listaTareas) {
             e.preventDefault();
             const touch = e.touches[0];
@@ -753,6 +752,7 @@
             document.addEventListener('touchmove', moverTouch, { passive: false });
             document.addEventListener('touchend', terminarTouch);
         }
+
         function actualizarConexionesVisor(canvas, listaTareas) {
             const svg = canvas.querySelector('svg');
             svg.querySelectorAll('line').forEach(line => line.remove());
@@ -772,20 +772,47 @@
         // Guardar evaluación
         document.getElementById('btn-guardar-evaluacion').addEventListener('click', async () => {
             if (!usuarioSeleccionado) return;
+
+            const btn = document.getElementById('btn-guardar-evaluacion');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+
             const evaluacion = document.getElementById('evaluacion-texto').value.trim();
             const nivel = document.getElementById('evaluacion-nivel').value;
             const destacado = document.getElementById('evaluacion-destacado').checked;
+
             const body = new URLSearchParams({
                 action: 'saveEvaluacion',
-                correo: usuarioSeleccionado.correo || usuarioSeleccionado.nick + '@dominio.com', // Necesitamos correo real
-                dni: '', // No tenemos DNI del usuario, así que no podemos identificar por DNI. Debemos modificar Apps Script para aceptar nick? Ver nota.
-                evaluacion,
-                nivel,
-                destacado
+                correo: usuarioSeleccionado.correo || usuarioSeleccionado.nick + '@dominio.com',
+                evaluacion: evaluacion,
+                nivel: nivel,
+                destacado: destacado ? 'true' : 'false'
             });
-            // Nota: el visor no conoce el correo completo, solo el nick. Necesitamos incluir el correo real.
-            // Por lo tanto, modificar getVisorData para que devuelva también el correo.
-            // Ajuste en Apps Script: incluir correo en usuarios. Luego aquí usarlo.
+
+            try {
+                const resp = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString()
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    mostrarMensaje('evaluacion-message', 'Evaluación guardada correctamente.', 'success');
+                    usuarioSeleccionado.evaluacion = evaluacion;
+                    usuarioSeleccionado.nivel = nivel;
+                    usuarioSeleccionado.destacado = destacado;
+                    aplicarFiltros();
+                } else {
+                    mostrarMensaje('evaluacion-message', result.message || 'Error al guardar.', 'danger');
+                }
+            } catch (err) {
+                console.error(err);
+                mostrarMensaje('evaluacion-message', 'Error de conexión con el servidor.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
         });
 
         document.getElementById('btn-imprimir').addEventListener('click', () => {
