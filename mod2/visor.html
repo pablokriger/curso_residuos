@@ -26,6 +26,9 @@
             --danger: #e74c3c;
             --warning: #f39c12;
             --success: #27ae60;
+            --naranja: #f39c12;
+            --rojo: #e74c3c;
+            --verde: #27ae60;
         }
 
         * { box-sizing: border-box; }
@@ -277,6 +280,10 @@
             border-color: var(--accent);
             background: #f0fff0;
         }
+        .user-card.nivel-aprobado { background: #e8f5e9; border-left: 5px solid var(--verde); }
+        .user-card.nivel-revisar1 { background: #fff3e0; border-left: 5px solid var(--naranja); }
+        .user-card.nivel-revisar2 { background: #ffebee; border-left: 5px solid var(--rojo); }
+        .user-card.nivel-sin-evaluar { background: #ffffff; }
 
         .answer-box {
             background: #fafafa;
@@ -289,7 +296,6 @@
             font-weight: 700;
         }
 
-        /* ====== DIAGRAMA DE FLUJO (VISOR) ====== */
         .flow-container {
             background: #faf9f4;
             border: 2px dashed #ccc;
@@ -345,7 +351,6 @@
             border-radius: 50%;
             margin-right: 4px;
         }
-        /* Tipos */
         .task-node.tipo-descripcion {
             border-radius: 50px;
             background: #fefefe;
@@ -378,6 +383,28 @@
         }
         .hidden { display: none !important; }
 
+        /* Filtros */
+        .filtro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: white;
+        }
+        .filtro-badge.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         @media (max-width: 768px) {
             .hero-page h1 { font-size: 1.8rem; }
             .bloque { padding: 1.5rem; }
@@ -388,7 +415,6 @@
 <body>
 
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
-
     <div id="header-container"></div>
 
     <header class="hero-page">
@@ -402,7 +428,6 @@
     <main id="main-content">
         <div class="container">
 
-            <!-- LOGIN -->
             <section id="login-section" aria-label="Iniciar sesión">
                 <div class="login-card">
                     <h2><i class="fa-solid fa-eye"></i> Acceso para visualizadores</h2>
@@ -426,13 +451,20 @@
                 </div>
             </section>
 
-            <!-- CONTENIDO VISOR -->
             <section id="visor-content" class="hidden">
                 <div class="bloque">
                     <h2><i class="fa-solid fa-users"></i> Usuarios con actividad</h2>
                     <div class="mb-3">
                         <label for="search-nick" class="form-label">Buscar por nickname</label>
                         <input type="text" class="form-control" id="search-nick" placeholder="Escribí el nick...">
+                    </div>
+                    <div id="filtros" class="mb-3">
+                        <span class="filtro-badge activo" data-filtro="todos">Todos</span>
+                        <span class="filtro-badge" data-filtro="Aprobado">Aprobados</span>
+                        <span class="filtro-badge" data-filtro="Revisar I">Revisar I</span>
+                        <span class="filtro-badge" data-filtro="Revisar II">Revisar II</span>
+                        <span class="filtro-badge" data-filtro="Sin evaluar">Sin evaluar</span>
+                        <span class="filtro-badge" data-filtro="Destacado">Destacado</span>
                     </div>
                     <div id="lista-usuarios" class="row g-3"></div>
                     <div id="lista-spinner" class="spinner-overlay hidden">
@@ -442,8 +474,39 @@
                 </div>
 
                 <div class="bloque hidden" id="detalle-usuario">
-                    <h2><i class="fa-solid fa-file-lines"></i> Respuestas de <span id="nombre-usuario"></span></h2>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                        <h2><i class="fa-solid fa-file-lines"></i> Respuestas de <span id="nombre-usuario"></span></h2>
+                        <button class="btn btn-outline-primary" id="btn-imprimir"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
+                    </div>
                     <div id="respuestas-contenido"></div>
+
+                    <!-- Sección de evaluación -->
+                    <div class="answer-box mt-4">
+                        <h5><i class="fa-solid fa-star"></i> Evaluación del trabajo</h5>
+                        <div class="mb-3">
+                            <label for="evaluacion-texto" class="form-label">Evaluación (visible para el cursante)</label>
+                            <textarea class="form-control" id="evaluacion-texto" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nivel de evaluación</label>
+                            <select class="form-select" id="evaluacion-nivel">
+                                <option value="Sin evaluar">Sin evaluar</option>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Revisar I">Revisar I</option>
+                                <option value="Revisar II">Revisar II</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="evaluacion-destacado">
+                            <label class="form-check-label" for="evaluacion-destacado">
+                                <i class="fa-solid fa-star text-warning"></i> Destacar
+                            </label>
+                        </div>
+                        <button class="btn btn-guardar" id="btn-guardar-evaluacion">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar evaluación
+                        </button>
+                        <div id="evaluacion-message" class="mt-2"></div>
+                    </div>
                 </div>
             </section>
 
@@ -455,9 +518,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyo9QSdBhMUU5FoVh00WyFc-2hBxLfchMGzkIzJsF6mzRaRp2Ing_AaXcY72CnS0D4/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysBdMDeN5_X8WAhOVGgXtVXSLT1kily7cCHfnS_zV4PfGpVe0dSndDjzbr16R-dzo/exec';
         let visorActual = null;
         let usuariosData = [];
+        let usuarioSeleccionado = null;
+        let filtroActual = 'todos';
 
         async function cargarElementos() {
             try {
@@ -469,40 +534,25 @@
                 const skipLink = doc.querySelector('.skip-link');
                 const navbar = doc.querySelector('nav');
                 const footer = doc.querySelector('footer');
-                if (skipLink && navbar) {
-                    document.getElementById('header-container').innerHTML = skipLink.outerHTML + navbar.outerHTML;
-                }
-                if (footer) {
-                    document.getElementById('footer-container').innerHTML = footer.outerHTML;
-                }
-                document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(toggle => {
-                    new bootstrap.Dropdown(toggle);
-                });
-            } catch (error) {
-                console.error('Error cargando elementos comunes:', error);
-            }
+                if (skipLink && navbar) document.getElementById('header-container').innerHTML = skipLink.outerHTML + navbar.outerHTML;
+                if (footer) document.getElementById('footer-container').innerHTML = footer.outerHTML;
+                document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(toggle => new bootstrap.Dropdown(toggle));
+            } catch (error) { console.error('Error cargando elementos comunes:', error); }
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
         function mostrarMensaje(id, mensaje, tipo = 'success') {
             const el = document.getElementById(id);
             if (!el) return;
             el.innerHTML = `<div class="alert alert-${tipo} py-2 px-3" style="border-radius: 10px;">${mensaje}</div>`;
-            setTimeout(() => { el.innerHTML = ''; }, 4000);
+            setTimeout(() => el.innerHTML = '', 4000);
         }
 
         document.getElementById('btn-login').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const dni = document.getElementById('login-password').value.trim();
-            if (!email || !dni) {
-                mostrarMensaje('login-message', 'Por favor completá ambos campos.', 'danger');
-                return;
-            }
+            if (!email || !dni) { mostrarMensaje('login-message', 'Por favor completá ambos campos.', 'danger'); return; }
             document.getElementById('login-spinner').classList.remove('hidden');
             document.getElementById('btn-login').disabled = true;
             try {
@@ -517,10 +567,8 @@
                 } else {
                     mostrarMensaje('login-message', data.message || 'Acceso denegado.', 'danger');
                 }
-            } catch (err) {
-                console.error(err);
-                mostrarMensaje('login-message', 'Error de conexión con el servidor.', 'danger');
-            } finally {
+            } catch (err) { console.error(err); mostrarMensaje('login-message', 'Error de conexión con el servidor.', 'danger'); }
+            finally {
                 document.getElementById('login-spinner').classList.add('hidden');
                 document.getElementById('btn-login').disabled = false;
             }
@@ -534,86 +582,87 @@
                 const data = await resp.json();
                 if (data.success && data.usuarios) {
                     usuariosData = data.usuarios;
-                    renderizarListaUsuarios(usuariosData);
+                    aplicarFiltros();
+                } else console.error('Error al obtener datos:', data.message);
+            } catch (err) { console.error('Error cargando lista:', err); }
+            finally { document.getElementById('lista-spinner').classList.add('hidden'); }
+        }
+
+        function aplicarFiltros() {
+            const texto = document.getElementById('search-nick').value.trim().toLowerCase();
+            let filtrados = usuariosData.filter(u => u.nick.toLowerCase().includes(texto));
+            if (filtroActual !== 'todos') {
+                if (filtroActual === 'Destacado') {
+                    filtrados = filtrados.filter(u => u.destacado === true || u.destacado === 'true' || u.destacado === 'TRUE');
                 } else {
-                    console.error('Error al obtener datos:', data.message);
+                    filtrados = filtrados.filter(u => (u.nivel || 'Sin evaluar') === filtroActual);
                 }
-            } catch (err) {
-                console.error('Error cargando lista:', err);
-            } finally {
-                document.getElementById('lista-spinner').classList.add('hidden');
             }
+            renderizarListaUsuarios(filtrados);
         }
 
         function renderizarListaUsuarios(usuarios) {
-            // Ordenar alfabéticamente
-            const ordenados = [...usuarios].sort((a, b) => a.nick.localeCompare(b.nick));
+            const ordenados = [...usuarios].sort((a,b) => a.nick.localeCompare(b.nick));
             const contenedor = document.getElementById('lista-usuarios');
             contenedor.innerHTML = '';
-            if (ordenados.length === 0) {
-                contenedor.innerHTML = '<p class="text-muted">No hay usuarios con actividad todavía.</p>';
-                return;
-            }
+            if (ordenados.length === 0) { contenedor.innerHTML = '<p class="text-muted">No hay usuarios con actividad.</p>'; return; }
             ordenados.forEach(u => {
                 const div = document.createElement('div');
                 div.className = 'col-md-4 col-sm-6';
+                const nivelClass = (u.nivel === 'Aprobado') ? 'nivel-aprobado' : (u.nivel === 'Revisar I') ? 'nivel-revisar1' : (u.nivel === 'Revisar II') ? 'nivel-revisar2' : 'nivel-sin-evaluar';
                 div.innerHTML = `
-                    <div class="user-card" data-nick="${u.nick}">
-                        <i class="fa-solid fa-user me-2 text-primary"></i>
+                    <div class="user-card ${nivelClass}" data-nick="${u.nick}">
+                        <i class="fa-solid fa-user me-2"></i>
                         <strong>${escapeHtml(u.nick)}</strong>
+                        ${u.destacado === true || u.destacado === 'true' || u.destacado === 'TRUE' ? '<i class="fa-solid fa-star text-warning ms-2"></i>' : ''}
                     </div>
                 `;
                 div.querySelector('.user-card').addEventListener('click', () => {
-                    document.querySelectorAll('.user-card').forEach(card => card.classList.remove('active'));
+                    document.querySelectorAll('.user-card').forEach(c => c.classList.remove('active'));
                     div.querySelector('.user-card').classList.add('active');
-                    mostrarDetalleUsuario(u.nick);
+                    usuarioSeleccionado = u;
+                    mostrarDetalleUsuario(u);
                 });
                 contenedor.appendChild(div);
             });
         }
 
-        document.getElementById('search-nick').addEventListener('input', (e) => {
-            const filtro = e.target.value.trim().toLowerCase();
-            const filtrados = usuariosData.filter(u => u.nick.toLowerCase().includes(filtro));
-            renderizarListaUsuarios(filtrados);
+        document.getElementById('search-nick').addEventListener('input', aplicarFiltros);
+
+        document.getElementById('filtros').addEventListener('click', (e) => {
+            const badge = e.target.closest('.filtro-badge');
+            if (!badge) return;
+            filtroActual = badge.dataset.filtro;
+            document.querySelectorAll('.filtro-badge').forEach(b => b.classList.remove('activo'));
+            badge.classList.add('activo');
+            aplicarFiltros();
         });
 
-        function mostrarDetalleUsuario(nick) {
-            const usuario = usuariosData.find(u => u.nick === nick);
-            if (!usuario) return;
-            document.getElementById('nombre-usuario').textContent = usuario.nick;
+        function mostrarDetalleUsuario(u) {
+            document.getElementById('nombre-usuario').textContent = u.nick;
             const contenedor = document.getElementById('respuestas-contenido');
             contenedor.innerHTML = '';
-
             // Actividad 1
-            if (usuario.mod1) {
-                const mod1 = usuario.mod1;
+            if (u.mod1) {
                 const preguntas = [
-                    { titulo: '1. ¿Qué tipo de residuos considerás necesario gestionar?', respuesta: mod1.pregunta1 },
-                    { titulo: '2. ¿De qué volumen estamos hablando? ¿Y cada cuánto tiempo?', respuesta: mod1.pregunta2 },
-                    { titulo: '3. Formulá el problema que observás en la gestión de residuos actual.', respuesta: mod1.pregunta3 },
-                    { titulo: '4. ¿De qué manera creés que sería factible mejorar, transformar o gestionar esa situación?', respuesta: mod1.pregunta4 }
+                    { titulo: '1. ¿Qué tipo de residuos considerás necesario gestionar?', respuesta: u.mod1.pregunta1 },
+                    { titulo: '2. ¿De qué volumen estamos hablando? ¿Y cada cuánto tiempo?', respuesta: u.mod1.pregunta2 },
+                    { titulo: '3. Formulá el problema que observás en la gestión de residuos actual.', respuesta: u.mod1.pregunta3 },
+                    { titulo: '4. ¿De qué manera creés que sería factible mejorar, transformar o gestionar esa situación?', respuesta: u.mod1.pregunta4 }
                 ];
                 const divMod1 = document.createElement('div');
                 divMod1.className = 'answer-box';
                 divMod1.innerHTML = `<h5><i class="fa-solid fa-pen-to-square me-2"></i>Actividad 1</h5>`;
                 preguntas.forEach(p => {
-                    divMod1.innerHTML += `
-                        <p><strong>${escapeHtml(p.titulo)}</strong></p>
-                        <p>${escapeHtml(p.respuesta || 'Sin respuesta')}</p>
-                        <hr>
-                    `;
+                    divMod1.innerHTML += `<p><strong>${escapeHtml(p.titulo)}</strong></p><p>${escapeHtml(p.respuesta || 'Sin respuesta')}</p><hr>`;
                 });
                 contenedor.appendChild(divMod1);
             }
-
-            // Actividad 2: diagrama interactivo (solo lectura)
-            if (usuario.mod2 && usuario.mod2.length > 0) {
+            // Actividad 2
+            if (u.mod2 && u.mod2.length > 0) {
                 const divMod2 = document.createElement('div');
                 divMod2.className = 'answer-box';
                 divMod2.innerHTML = `<h5><i class="fa-solid fa-diagram-project me-2"></i>Actividad 2 (Diagrama)</h5>`;
-
-                // Crear contenedor del diagrama
                 const flowContainer = document.createElement('div');
                 flowContainer.className = 'flow-container';
                 const flowCanvas = document.createElement('div');
@@ -624,59 +673,41 @@
                 flowCanvas.appendChild(svg);
                 flowContainer.appendChild(flowCanvas);
                 divMod2.appendChild(flowContainer);
-
-                // Dibujar conexiones
-                usuario.mod2.forEach(tarea => {
+                u.mod2.forEach(tarea => {
                     (tarea.conexiones || []).forEach(idDestino => {
-                        const destino = usuario.mod2.find(t => t.id === idDestino);
+                        const destino = u.mod2.find(t => t.id === idDestino);
                         if (!destino) return;
-                        const x1 = tarea.x + 100;
-                        const y1 = tarea.y + 40;
-                        const x2 = destino.x + 100;
-                        const y2 = destino.y + 40;
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        line.setAttribute('x1', x1);
-                        line.setAttribute('y1', y1);
-                        line.setAttribute('x2', x2);
-                        line.setAttribute('y2', y2);
+                        line.setAttribute('x1', tarea.x + 100); line.setAttribute('y1', tarea.y + 40);
+                        line.setAttribute('x2', destino.x + 100); line.setAttribute('y2', destino.y + 40);
                         line.setAttribute('marker-end', 'url(#arrowhead)');
                         svg.appendChild(line);
                     });
                 });
-
-                // Crear nodos
-                usuario.mod2.forEach(tarea => {
+                u.mod2.forEach(tarea => {
                     const nodo = document.createElement('div');
                     nodo.className = 'task-node';
                     if (tarea.tipo === 'Descripción') nodo.classList.add('tipo-descripcion');
                     if (tarea.tipo === 'Texto') nodo.classList.add('tipo-texto');
-                    nodo.style.left = tarea.x + 'px';
-                    nodo.style.top = tarea.y + 'px';
+                    nodo.style.left = tarea.x + 'px'; nodo.style.top = tarea.y + 'px';
                     nodo.style.borderColor = tarea.color;
                     nodo.dataset.id = tarea.id;
-
                     const colorDotHTML = tarea.tipo === 'Texto' ? '' : `<span class="color-dot" style="background:${tarea.color}"></span>`;
-
-                    nodo.innerHTML = `
-                        <div class="node-title">${colorDotHTML}${escapeHtml(tarea.titulo)}</div>
-                        <div class="node-desc">${escapeHtml(tarea.descripcion || '')}</div>
-                        <div class="node-actores">${escapeHtml(tarea.actores || '')}</div>
-                    `;
-
-                    // Permitir arrastre (sin guardar)
-                    nodo.addEventListener('mousedown', (e) => iniciarArrastreVisor(e, tarea, flowCanvas, usuario.mod2));
-                    nodo.addEventListener('touchstart', (e) => iniciarArrastreVisorTouch(e, tarea, flowCanvas, usuario.mod2), { passive: false });
-
+                    nodo.innerHTML = `<div class="node-title">${colorDotHTML}${escapeHtml(tarea.titulo)}</div><div class="node-desc">${escapeHtml(tarea.descripcion || '')}</div><div class="node-actores">${escapeHtml(tarea.actores || '')}</div>`;
+                    nodo.addEventListener('mousedown', (e) => iniciarArrastreVisor(e, tarea, flowCanvas, u.mod2));
+                    nodo.addEventListener('touchstart', (e) => iniciarArrastreVisorTouch(e, tarea, flowCanvas, u.mod2), { passive: false });
                     flowCanvas.appendChild(nodo);
                 });
-
                 contenedor.appendChild(divMod2);
             }
-
+            // Cargar evaluación actual
+            document.getElementById('evaluacion-texto').value = u.evaluacion || '';
+            document.getElementById('evaluacion-nivel').value = u.nivel || 'Sin evaluar';
+            document.getElementById('evaluacion-destacado').checked = (u.destacado === true || u.destacado === 'true' || u.destacado === 'TRUE');
             document.getElementById('detalle-usuario').classList.remove('hidden');
         }
 
-        // Funciones de arrastre para el visor (solo visual, sin guardar)
+        // Funciones de arrastre (igual que antes, solo visual)
         function iniciarArrastreVisor(e, tarea, canvas, listaTareas) {
             e.preventDefault();
             const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
@@ -685,7 +716,6 @@
             const canvasRect = canvas.getBoundingClientRect();
             const offsetX = e.clientX - rect.left;
             const offsetY = e.clientY - rect.top;
-
             function mover(e) {
                 const nuevoX = e.clientX - canvasRect.left - offsetX;
                 const nuevoY = e.clientY - canvasRect.top - offsetY;
@@ -693,19 +723,12 @@
                 tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
                 nodo.style.left = tarea.x + 'px';
                 nodo.style.top = tarea.y + 'px';
-                // Actualizar conexiones
                 actualizarConexionesVisor(canvas, listaTareas);
             }
-
-            function terminar() {
-                document.removeEventListener('mousemove', mover);
-                document.removeEventListener('mouseup', terminar);
-            }
-
+            function terminar() { document.removeEventListener('mousemove', mover); document.removeEventListener('mouseup', terminar); }
             document.addEventListener('mousemove', mover);
             document.addEventListener('mouseup', terminar);
         }
-
         function iniciarArrastreVisorTouch(e, tarea, canvas, listaTareas) {
             e.preventDefault();
             const touch = e.touches[0];
@@ -715,7 +738,6 @@
             const canvasRect = canvas.getBoundingClientRect();
             const offsetX = touch.clientX - rect.left;
             const offsetY = touch.clientY - rect.top;
-
             function moverTouch(ev) {
                 ev.preventDefault();
                 const t = ev.touches[0];
@@ -727,43 +749,50 @@
                 nodo.style.top = tarea.y + 'px';
                 actualizarConexionesVisor(canvas, listaTareas);
             }
-
-            function terminarTouch() {
-                document.removeEventListener('touchmove', moverTouch);
-                document.removeEventListener('touchend', terminarTouch);
-            }
-
+            function terminarTouch() { document.removeEventListener('touchmove', moverTouch); document.removeEventListener('touchend', terminarTouch); }
             document.addEventListener('touchmove', moverTouch, { passive: false });
             document.addEventListener('touchend', terminarTouch);
         }
-
         function actualizarConexionesVisor(canvas, listaTareas) {
             const svg = canvas.querySelector('svg');
-            // Limpiar líneas anteriores (excepto defs)
-            const defs = svg.querySelector('defs');
             svg.querySelectorAll('line').forEach(line => line.remove());
             listaTareas.forEach(tarea => {
                 (tarea.conexiones || []).forEach(idDestino => {
                     const destino = listaTareas.find(t => t.id === idDestino);
                     if (!destino) return;
-                    const x1 = tarea.x + 100;
-                    const y1 = tarea.y + 40;
-                    const x2 = destino.x + 100;
-                    const y2 = destino.y + 40;
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    line.setAttribute('x1', x1);
-                    line.setAttribute('y1', y1);
-                    line.setAttribute('x2', x2);
-                    line.setAttribute('y2', y2);
+                    line.setAttribute('x1', tarea.x + 100); line.setAttribute('y1', tarea.y + 40);
+                    line.setAttribute('x2', destino.x + 100); line.setAttribute('y2', destino.y + 40);
                     line.setAttribute('marker-end', 'url(#arrowhead)');
                     svg.appendChild(line);
                 });
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarElementos();
+        // Guardar evaluación
+        document.getElementById('btn-guardar-evaluacion').addEventListener('click', async () => {
+            if (!usuarioSeleccionado) return;
+            const evaluacion = document.getElementById('evaluacion-texto').value.trim();
+            const nivel = document.getElementById('evaluacion-nivel').value;
+            const destacado = document.getElementById('evaluacion-destacado').checked;
+            const body = new URLSearchParams({
+                action: 'saveEvaluacion',
+                correo: usuarioSeleccionado.correo || usuarioSeleccionado.nick + '@dominio.com', // Necesitamos correo real
+                dni: '', // No tenemos DNI del usuario, así que no podemos identificar por DNI. Debemos modificar Apps Script para aceptar nick? Ver nota.
+                evaluacion,
+                nivel,
+                destacado
+            });
+            // Nota: el visor no conoce el correo completo, solo el nick. Necesitamos incluir el correo real.
+            // Por lo tanto, modificar getVisorData para que devuelva también el correo.
+            // Ajuste en Apps Script: incluir correo en usuarios. Luego aquí usarlo.
         });
+
+        document.getElementById('btn-imprimir').addEventListener('click', () => {
+            window.print();
+        });
+
+        document.addEventListener('DOMContentLoaded', cargarElementos);
     </script>
 </body>
 </html>
