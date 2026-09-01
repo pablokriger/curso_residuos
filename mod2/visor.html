@@ -785,4 +785,125 @@
             // Cargar evaluación actual
             document.getElementById('evaluacion-texto').value = u.evaluacion || '';
             document.getElementById('evaluacion-nivel').value = u.nivel || 'Sin evaluar';
-            document.getElementById('evaluacion-destacado').checked = (u.destacado === true || u.dest
+            document.getElementById('evaluacion-destacado').checked = (u.destacado === true || u.destacado === 'true' || u.destacado === 'TRUE');
+            document.getElementById('detalle-usuario').classList.remove('hidden');
+        }
+
+        // ... (resto del código de arrastre, guardado de evaluación, etc. se mantiene igual)
+        function iniciarArrastreVisor(e, tarea, canvas, listaTareas) {
+            e.preventDefault();
+            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
+            if (!nodo) return;
+            const rect = nodo.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            function mover(e) {
+                const nuevoX = e.clientX - canvasRect.left - offsetX;
+                const nuevoY = e.clientY - canvasRect.top - offsetY;
+                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
+                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
+                nodo.style.left = tarea.x + 'px';
+                nodo.style.top = tarea.y + 'px';
+                actualizarConexionesVisor(canvas, listaTareas);
+            }
+            function terminar() { document.removeEventListener('mousemove', mover); document.removeEventListener('mouseup', terminar); }
+            document.addEventListener('mousemove', mover);
+            document.addEventListener('mouseup', terminar);
+        }
+
+        function iniciarArrastreVisorTouch(e, tarea, canvas, listaTareas) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
+            if (!nodo) return;
+            const rect = nodo.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const offsetX = touch.clientX - rect.left;
+            const offsetY = touch.clientY - rect.top;
+            function moverTouch(ev) {
+                ev.preventDefault();
+                const t = ev.touches[0];
+                const nuevoX = t.clientX - canvasRect.left - offsetX;
+                const nuevoY = t.clientY - canvasRect.top - offsetY;
+                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
+                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
+                nodo.style.left = tarea.x + 'px';
+                nodo.style.top = tarea.y + 'px';
+                actualizarConexionesVisor(canvas, listaTareas);
+            }
+            function terminarTouch() { document.removeEventListener('touchmove', moverTouch); document.removeEventListener('touchend', terminarTouch); }
+            document.addEventListener('touchmove', moverTouch, { passive: false });
+            document.addEventListener('touchend', terminarTouch);
+        }
+
+        function actualizarConexionesVisor(canvas, listaTareas) {
+            const svg = canvas.querySelector('svg');
+            svg.querySelectorAll('line').forEach(line => line.remove());
+            listaTareas.forEach(tarea => {
+                (tarea.conexiones || []).forEach(idDestino => {
+                    const destino = listaTareas.find(t => t.id === idDestino);
+                    if (!destino) return;
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', tarea.x + 100); line.setAttribute('y1', tarea.y + 40);
+                    line.setAttribute('x2', destino.x + 100); line.setAttribute('y2', destino.y + 40);
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
+                    svg.appendChild(line);
+                });
+            });
+        }
+
+        // Guardar evaluación
+        document.getElementById('btn-guardar-evaluacion').addEventListener('click', async () => {
+            if (!usuarioSeleccionado) return;
+
+            const btn = document.getElementById('btn-guardar-evaluacion');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+
+            const evaluacion = document.getElementById('evaluacion-texto').value.trim();
+            const nivel = document.getElementById('evaluacion-nivel').value;
+            const destacado = document.getElementById('evaluacion-destacado').checked;
+
+            const body = new URLSearchParams({
+                action: 'saveEvaluacion',
+                correo: usuarioSeleccionado.correo || usuarioSeleccionado.nick + '@dominio.com',
+                evaluacion: evaluacion,
+                nivel: nivel,
+                destacado: destacado ? 'true' : 'false'
+            });
+
+            try {
+                const resp = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString()
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    mostrarMensaje('evaluacion-message', 'Evaluación guardada correctamente.', 'success');
+                    usuarioSeleccionado.evaluacion = evaluacion;
+                    usuarioSeleccionado.nivel = nivel;
+                    usuarioSeleccionado.destacado = destacado;
+                    aplicarFiltros();
+                } else {
+                    mostrarMensaje('evaluacion-message', result.message || 'Error al guardar.', 'danger');
+                }
+            } catch (err) {
+                console.error(err);
+                mostrarMensaje('evaluacion-message', 'Error de conexión con el servidor.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        });
+
+        document.getElementById('btn-imprimir').addEventListener('click', () => {
+            window.print();
+        });
+
+        document.addEventListener('DOMContentLoaded', cargarElementos);
+    </script>
+</body>
+</html>
