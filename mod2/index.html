@@ -484,38 +484,39 @@
         .nivel-revisar2 { background: #ffebee; color: #b71c1c; }
         .nivel-sin-evaluar { background: #eceff1; color: #546e7a; }
 
-        /* Estilos para la tabla editable */
+        /* Estilos para la tabla editable vertical */
         .tabla-editable {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            overflow-x: auto;
         }
         .tabla-editable th, .tabla-editable td {
             border: 1px solid #ccc;
-            padding: 4px;
-            text-align: center;
-            vertical-align: middle;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
         }
         .tabla-editable th {
             background-color: var(--primary);
             color: white;
             font-weight: 600;
         }
+        .tabla-editable .campo {
+            background-color: rgba(43, 76, 111, 0.05);
+            font-weight: 600;
+            width: 200px;
+        }
         .tabla-editable input, .tabla-editable textarea {
             width: 100%;
             border: none;
             background: transparent;
-            font-size: 0.8rem;
-            padding: 2px;
+            font-size: 0.85rem;
+            padding: 4px;
             resize: vertical;
         }
         .tabla-editable input::placeholder, .tabla-editable textarea::placeholder {
             color: #999;
             font-style: italic;
-        }
-        .tabla-editable td.gris {
-            background-color: #f0f0f0;
         }
 
         .hidden { display: none !important; }
@@ -532,8 +533,12 @@
                 min-width: 1200px;
                 min-height: 500px;
             }
-            .tabla-editable {
-                font-size: 0.7rem;
+            .tabla-editable .campo {
+                width: 120px;
+                font-size: 0.75rem;
+            }
+            .tabla-editable input, .tabla-editable textarea {
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -583,11 +588,11 @@
                     <!-- Actividad 1 -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingAct1">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAct1" aria-expanded="true" aria-controls="collapseAct1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAct1" aria-expanded="false" aria-controls="collapseAct1">
                                 <i class="fa-solid fa-pen-to-square me-2"></i> Actividad 1: Descriptiva
                             </button>
                         </h2>
-                        <div id="collapseAct1" class="accordion-collapse collapse show" aria-labelledby="headingAct1" data-bs-parent="#accordionActividades">
+                        <div id="collapseAct1" class="accordion-collapse collapse" aria-labelledby="headingAct1" data-bs-parent="#accordionActividades">
                             <div class="accordion-body">
                                 <div id="mod1-spinner" class="spinner-overlay hidden">
                                     <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -675,7 +680,7 @@
                         </div>
                     </div>
 
-                    <!-- Actividad 3 (Tabla editable) -->
+                    <!-- Actividad 3 (Tabla editable vertical) -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingAct3">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAct3" aria-expanded="false" aria-controls="collapseAct3">
@@ -694,44 +699,15 @@
                                 </div>
                                 <p>Complete la siguiente tabla con la información correspondiente a su proyecto de gestión de residuos. Los datos de ejemplo son orientativos.</p>
 
-                                <!-- Tabla editable -->
+                                <!-- Tabla editable vertical -->
                                 <div class="table-responsive">
                                     <table class="tabla-editable" id="tabla-editable">
                                         <thead>
                                             <tr>
-                                                <th rowspan="2">#</th>
-                                                <th colspan="3">Generación</th>
-                                                <th colspan="4">Recolección</th>
-                                                <th colspan="3">Transporte</th>
-                                                <th colspan="3">Pretratamiento</th>
-                                                <th colspan="2">Higiene urbana</th>
-                                                <th colspan="3">Tratamiento</th>
-                                                <th colspan="4">Disposición</th>
-                                                <th rowspan="2">Factibilidad</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Cantidad</th>
-                                                <th>Unidad</th>
-                                                <th>Obs.</th>
-                                                <th>Cantidad</th>
-                                                <th>Tipo</th>
-                                                <th>Frecuencia</th>
-                                                <th>Obs.</th>
-                                                <th>Tipo</th>
-                                                <th>Frecuencia</th>
-                                                <th>Obs.</th>
-                                                <th>Fracción</th>
-                                                <th>%</th>
-                                                <th>Obs.</th>
-                                                <th>Tipo</th>
-                                                <th>Frecuencia</th>
-                                                <th>Obs.</th>
-                                                <th>Fracción</th>
-                                                <th>Proceso</th>
-                                                <th>Destino</th>
-                                                <th>Tn/mes</th>
-                                                <th>Vida útil</th>
-                                                <th>Obs.</th>
+                                                <th>Campo</th>
+                                                <th>Ejemplo 1</th>
+                                                <th>Ejemplo 2</th>
+                                                <th>Ejemplo 3</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tabla-body">
@@ -841,42 +817,84 @@
 
         const coloresDisponibles = ['#2B4C6F', '#78A64F', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#3498db', '#34495e', '#95a5a6'];
 
-        // Datos de ejemplo para la tabla (Actividad 3)
+        // Datos de ejemplo para la tabla (Actividad 3) - ahora en estructura vertical
         const datosEjemploTabla = [
-            {
-                fila: 1,
-                generacion: { cantidad: '110', unidad: 'Toneladas diarias', obs: 'Caracterización: 50 T/día reciclables + 50 T/día orgánicos + 10 T/día rechazo' },
-                recoleccion: { cantidad: '2 camiones', tipo: '1 de 7tn cola de pato + 1 de 7tn volcador', frecuencia: 'Cola de pato semanal para rechazo. 2 x semana volcador orgánicos. 2 x semana reciclables', obs: 'Con 2 camiones no se opera sábados. (Econovo/Ombú?)' },
-                transporte: { tipo: 'bici carros + carros eléctricos', frecuencia: 'diaria', obs: 'Solo para grandes generadores/cooperativas' },
-                pretratamiento: { fraccion: 'Separación en planta', porcentaje: '50/110', obs: 'Considerar gestión de AVUS/RAEEs/Fitosanitarios y otras fracciones posibles' },
-                higiene: { tipo: 'Barrido manual', frecuencia: 'días hábiles', obs: 'Con 2 cuadrillas no se opera sábados.' },
-                tratamiento: { fraccion: 'reciclables', proceso: 'enfardado en balas y pelletizado para comercialización', destino: '' },
-                disposicion: { tnMes: '2420', vidaUtil: '145200 tn = 5 años', obs: 'Actualmente basural, que comprende remediación y regionalización del mismo. 5 municipios de iguales características. 1 año de obra + 1 año de cierre. Evaluar nuevo modulo a los 3 años' },
-                factibilidad: 'Conseguir financiamiento para equipos, obra y mantenimiento del relleno. Financiamiento para camiones recolectores y equipos de higiene urbana. Mejorar la % de cobro de la tasa municipal, Incorporar ONGs, actores sociales, políticos y educación para hacer un proyecto qe trascienda la gestión política. Que sea política de estado a largo plazo'
-            },
-            {
-                fila: 2,
-                generacion: { cantidad: '', unidad: '', obs: '' },
-                recoleccion: { cantidad: '', tipo: '', frecuencia: '', obs: '' },
-                transporte: { tipo: '', frecuencia: '', obs: '' },
-                pretratamiento: { fraccion: 'Compostaje urbano', porcentaje: '50/110', obs: '' },
-                higiene: { tipo: '', frecuencia: '', obs: '' },
-                tratamiento: { fraccion: 'orgánicos', proceso: 'compostaje aeróbico en pilas', destino: '' },
-                disposicion: { tnMes: '', vidaUtil: '', obs: '' },
-                factibilidad: ''
-            },
-            {
-                fila: 3,
-                generacion: { cantidad: '', unidad: '', obs: '' },
-                recoleccion: { cantidad: '', tipo: '', frecuencia: '', obs: '' },
-                transporte: { tipo: '', frecuencia: '', obs: '' },
-                pretratamiento: { fraccion: 'rechazo del pretratamiento', porcentaje: '10/110', obs: '' },
-                higiene: { tipo: '', frecuencia: '', obs: '' },
-                tratamiento: { fraccion: 'rechazo', proceso: 'disposición en relleno sanitario controlado "consorcio"', destino: '' },
-                disposicion: { tnMes: '', vidaUtil: '', obs: '' },
-                factibilidad: ''
-            }
+            { campo: 'Generación - Cantidad', valor: '110' },
+            { campo: 'Generación - Unidad de medida', valor: 'Toneladas diarias' },
+            { campo: 'Generación - Observaciones', valor: 'Caracterización: 50 T/día reciclables + 50 T/día orgánicos + 10 T/día rechazo' },
+            { campo: 'Recolección - Cantidad', valor: '2 camiones' },
+            { campo: 'Recolección - Tipo', valor: '1 de 7tn cola de pato + 1 de 7tn volcador' },
+            { campo: 'Recolección - Frecuencia', valor: 'Cola de pato semanal para rechazo. 2 x semana volcador orgánicos. 2 x semana reciclables' },
+            { campo: 'Recolección - Observaciones', valor: 'Con 2 camiones no se opera sábados. (Econovo/Ombú?)' },
+            { campo: 'Transporte - Tipo', valor: 'bici carros + carros eléctricos' },
+            { campo: 'Transporte - Frecuencia', valor: 'diaria' },
+            { campo: 'Transporte - Observaciones', valor: 'Solo para grandes generadores/cooperativas' },
+            { campo: 'Pretratamiento - Fracción', valor: 'Separación en planta' },
+            { campo: 'Pretratamiento - %', valor: '50/110' },
+            { campo: 'Pretratamiento - Observaciones', valor: 'Considerar gestión de AVUS/RAEEs/Fitosanitarios y otras fracciones posibles' },
+            { campo: 'Higiene urbana - Tipo', valor: 'Barrido manual' },
+            { campo: 'Higiene urbana - Frecuencia', valor: 'días hábiles' },
+            { campo: 'Higiene urbana - Observaciones', valor: 'Con 2 cuadrillas no se opera sábados.' },
+            { campo: 'Tratamiento - Fracción', valor: 'reciclables' },
+            { campo: 'Tratamiento - Proceso', valor: 'enfardado en balas y pelletizado para comercialización' },
+            { campo: 'Tratamiento - Destino', valor: '' },
+            { campo: 'Disposición - Tn/mes', valor: '2420' },
+            { campo: 'Disposición - Vida útil', valor: '145200 tn = 5 años' },
+            { campo: 'Disposición - Observaciones', valor: 'Actualmente basural, que comprende remediación y regionalización del mismo. 5 municipios de iguales características. 1 año de obra + 1 año de cierre. Evaluar nuevo modulo a los 3 años' },
+            { campo: 'Factibilidad', valor: 'Conseguir financiamiento para equipos, obra y mantenimiento del relleno. Financiamiento para camiones recolectores y equipos de higiene urbana. Mejorar la % de cobro de la tasa municipal, Incorporar ONGs, actores sociales, políticos y educación para hacer un proyecto qe trascienda la gestión política. Que sea política de estado a largo plazo' }
         ];
+
+        // Datos para las otras dos filas de ejemplo
+        const datosEjemploFila2 = {
+            'Generación - Cantidad': '',
+            'Generación - Unidad de medida': '',
+            'Generación - Observaciones': '',
+            'Recolección - Cantidad': '',
+            'Recolección - Tipo': '',
+            'Recolección - Frecuencia': '',
+            'Recolección - Observaciones': '',
+            'Transporte - Tipo': '',
+            'Transporte - Frecuencia': '',
+            'Transporte - Observaciones': '',
+            'Pretratamiento - Fracción': 'Compostaje urbano',
+            'Pretratamiento - %': '50/110',
+            'Pretratamiento - Observaciones': '',
+            'Higiene urbana - Tipo': '',
+            'Higiene urbana - Frecuencia': '',
+            'Higiene urbana - Observaciones': '',
+            'Tratamiento - Fracción': 'orgánicos',
+            'Tratamiento - Proceso': 'compostaje aeróbico en pilas',
+            'Tratamiento - Destino': '',
+            'Disposición - Tn/mes': '',
+            'Disposición - Vida útil': '',
+            'Disposición - Observaciones': '',
+            'Factibilidad': ''
+        };
+        const datosEjemploFila3 = {
+            'Generación - Cantidad': '',
+            'Generación - Unidad de medida': '',
+            'Generación - Observaciones': '',
+            'Recolección - Cantidad': '',
+            'Recolección - Tipo': '',
+            'Recolección - Frecuencia': '',
+            'Recolección - Observaciones': '',
+            'Transporte - Tipo': '',
+            'Transporte - Frecuencia': '',
+            'Transporte - Observaciones': '',
+            'Pretratamiento - Fracción': 'rechazo del pretratamiento',
+            'Pretratamiento - %': '10/110',
+            'Pretratamiento - Observaciones': '',
+            'Higiene urbana - Tipo': '',
+            'Higiene urbana - Frecuencia': '',
+            'Higiene urbana - Observaciones': '',
+            'Tratamiento - Fracción': 'rechazo',
+            'Tratamiento - Proceso': 'disposición en relleno sanitario controlado "consorcio"',
+            'Tratamiento - Destino': '',
+            'Disposición - Tn/mes': '',
+            'Disposición - Vida útil': '',
+            'Disposición - Observaciones': '',
+            'Factibilidad': ''
+        };
 
         async function cargarElementos() {
             try {
@@ -1229,121 +1247,72 @@
         function generarTablaEditable() {
             const tbody = document.getElementById('tabla-body');
             tbody.innerHTML = '';
-            datosEjemploTabla.forEach((fila, index) => {
-                const tr = document.createElement('tr');
-                tr.dataset.fila = index + 1;
-                // Columna #
-                const tdNum = document.createElement('td');
-                tdNum.textContent = index + 1;
-                tr.appendChild(tdNum);
 
-                // Generación
-                agregarCeldaInput(tr, 'generacion.cantidad', fila.generacion.cantidad);
-                agregarCeldaInput(tr, 'generacion.unidad', fila.generacion.unidad);
-                agregarCeldaInput(tr, 'generacion.obs', fila.generacion.obs);
-                // Recolección
-                agregarCeldaInput(tr, 'recoleccion.cantidad', fila.recoleccion.cantidad);
-                agregarCeldaInput(tr, 'recoleccion.tipo', fila.recoleccion.tipo);
-                agregarCeldaInput(tr, 'recoleccion.frecuencia', fila.recoleccion.frecuencia);
-                agregarCeldaInput(tr, 'recoleccion.obs', fila.recoleccion.obs);
-                // Transporte
-                agregarCeldaInput(tr, 'transporte.tipo', fila.transporte.tipo);
-                agregarCeldaInput(tr, 'transporte.frecuencia', fila.transporte.frecuencia);
-                agregarCeldaInput(tr, 'transporte.obs', fila.transporte.obs);
-                // Pretratamiento
-                agregarCeldaInput(tr, 'pretratamiento.fraccion', fila.pretratamiento.fraccion);
-                agregarCeldaInput(tr, 'pretratamiento.porcentaje', fila.pretratamiento.porcentaje);
-                agregarCeldaInput(tr, 'pretratamiento.obs', fila.pretratamiento.obs);
-                // Higiene
-                agregarCeldaInput(tr, 'higiene.tipo', fila.higiene.tipo);
-                agregarCeldaInput(tr, 'higiene.frecuencia', fila.higiene.frecuencia);
-                agregarCeldaInput(tr, 'higiene.obs', fila.higiene.obs);
-                // Tratamiento
-                agregarCeldaInput(tr, 'tratamiento.fraccion', fila.tratamiento.fraccion);
-                agregarCeldaInput(tr, 'tratamiento.proceso', fila.tratamiento.proceso);
-                agregarCeldaInput(tr, 'tratamiento.destino', fila.tratamiento.destino);
-                // Disposición
-                agregarCeldaInput(tr, 'disposicion.tnMes', fila.disposicion.tnMes);
-                agregarCeldaInput(tr, 'disposicion.vidaUtil', fila.disposicion.vidaUtil);
-                agregarCeldaInput(tr, 'disposicion.obs', fila.disposicion.obs);
-                // Factibilidad
-                agregarCeldaTextarea(tr, 'factibilidad', fila.factibilidad);
+            // Crear filas para cada campo
+            datosEjemploTabla.forEach(item => {
+                const fila = document.createElement('tr');
+                const tdCampo = document.createElement('td');
+                tdCampo.className = 'campo';
+                tdCampo.textContent = item.campo;
+                fila.appendChild(tdCampo);
 
-                tbody.appendChild(tr);
+                // Tres columnas de datos (Ejemplo 1, 2, 3)
+                for (let i = 0; i < 3; i++) {
+                    const td = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.dataset.campo = item.campo;
+                    input.dataset.ejemplo = i + 1;
+                    // Placeholder: para columna 1 usar item.valor, para columna 2 y 3 usar datos correspondientes
+                    if (i === 0) {
+                        input.placeholder = item.valor || '';
+                    } else if (i === 1) {
+                        input.placeholder = datosEjemploFila2[item.campo] || '';
+                    } else {
+                        input.placeholder = datosEjemploFila3[item.campo] || '';
+                    }
+                    td.appendChild(input);
+                    fila.appendChild(td);
+                }
+                tbody.appendChild(fila);
             });
-        }
-
-        function agregarCeldaInput(tr, nombreCampo, placeholder) {
-            const td = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.dataset.campo = nombreCampo;
-            input.placeholder = placeholder || '';
-            input.className = 'form-control-sm';
-            td.appendChild(input);
-            tr.appendChild(td);
-        }
-
-        function agregarCeldaTextarea(tr, nombreCampo, placeholder) {
-            const td = document.createElement('td');
-            const textarea = document.createElement('textarea');
-            textarea.rows = 2;
-            textarea.dataset.campo = nombreCampo;
-            textarea.placeholder = placeholder || '';
-            textarea.className = 'form-control-sm';
-            td.appendChild(textarea);
-            tr.appendChild(td);
         }
 
         function obtenerDatosTabla() {
             const filas = [];
-            const trs = document.querySelectorAll('#tabla-body tr');
-            trs.forEach(tr => {
-                const fila = {};
-                const campos = tr.querySelectorAll('[data-campo]');
-                campos.forEach(input => {
-                    const campo = input.dataset.campo;
-                    const valor = input.value.trim();
-                    // Asignar a objeto anidado
-                    const partes = campo.split('.');
-                    let obj = fila;
-                    for (let i = 0; i < partes.length - 1; i++) {
-                        if (!obj[partes[i]]) obj[partes[i]] = {};
-                        obj = obj[partes[i]];
-                    }
-                    obj[partes[partes.length - 1]] = valor;
-                });
-                filas.push(fila);
+            // Se recogen los inputs organizados por campo y ejemplo
+            const campos = datosEjemploTabla.map(item => item.campo);
+            // Inicializar tres objetos para los tres ejemplos
+            const ejemplo1 = {};
+            const ejemplo2 = {};
+            const ejemplo3 = {};
+            document.querySelectorAll('#tabla-body input').forEach(input => {
+                const campo = input.dataset.campo;
+                const ejemplo = parseInt(input.dataset.ejemplo);
+                if (ejemplo === 1) ejemplo1[campo] = input.value.trim();
+                else if (ejemplo === 2) ejemplo2[campo] = input.value.trim();
+                else if (ejemplo === 3) ejemplo3[campo] = input.value.trim();
             });
+            filas.push(ejemplo1, ejemplo2, ejemplo3);
             return filas;
         }
 
         async function cargarActividad3() {
             if (!usuarioActual) return;
             document.getElementById('mod3-spinner').classList.remove('hidden');
-            generarTablaEditable(); // Inicializar con datos de ejemplo
+            generarTablaEditable(); // Inicializar con placeholders de ejemplo
             try {
                 const body = new URLSearchParams({ action: 'getMod3', correo: usuarioActual.correo, dni: usuarioActual.dni });
                 const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
                 const result = await resp.json();
                 if (result.success && result.data) {
-                    // Rellenar campos guardados
-                    const trs = document.querySelectorAll('#tabla-body tr');
-                    result.data.forEach((filaGuardada, index) => {
-                        if (index < trs.length) {
-                            const tr = trs[index];
-                            const inputs = tr.querySelectorAll('[data-campo]');
-                            inputs.forEach(input => {
-                                const campo = input.dataset.campo;
-                                const partes = campo.split('.');
-                                let valor = filaGuardada;
-                                for (const parte of partes) {
-                                    if (valor && valor[parte] !== undefined) valor = valor[parte];
-                                    else { valor = ''; break; }
-                                }
-                                input.value = valor || '';
-                            });
-                        }
+                    // result.data es un array con tres objetos (ejemplo1, ejemplo2, ejemplo3)
+                    const inputs = document.querySelectorAll('#tabla-body input');
+                    inputs.forEach(input => {
+                        const campo = input.dataset.campo;
+                        const ejemplo = parseInt(input.dataset.ejemplo);
+                        const valor = result.data[ejemplo - 1]?.[campo] || '';
+                        input.value = valor;
                     });
                 }
             } catch (err) { console.error('Error cargando actividad 3:', err); }
@@ -1354,7 +1323,7 @@
             if (!usuarioActual) return;
             const datos = obtenerDatosTabla();
             // Verificar que al menos un campo esté lleno
-            const hayDatos = datos.some(fila => Object.values(fila).some(val => typeof val === 'string' && val.trim() !== ''));
+            const hayDatos = datos.some(fila => Object.values(fila).some(val => val.trim() !== ''));
             if (!hayDatos) { mostrarMensaje('mod3-message', 'Complete al menos un campo.', 'warning'); return; }
             const body = new URLSearchParams({ action: 'saveMod3', correo: usuarioActual.correo, dni: usuarioActual.dni, data: JSON.stringify(datos) });
             try {
@@ -1370,7 +1339,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             cargarElementos();
             inicializarColorPicker();
-            // No llamamos a generarTablaEditable aquí porque se hace al loguearse
         });
     </script>
 </body>
