@@ -404,6 +404,49 @@
             border-color: var(--primary);
         }
 
+        /* Tabla Actividad 3 en visor */
+        .tabla-visualizacion {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            background: white;
+        }
+        .tabla-visualizacion th, .tabla-visualizacion td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .tabla-visualizacion th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        .tabla-visualizacion .campo {
+            background-color: rgba(43, 76, 111, 0.05);
+            font-weight: 600;
+            width: 200px;
+        }
+
+        .btn-cursante {
+            display: block;
+            margin: 1rem auto 0;
+            background-color: #e0e0e0;
+            color: #555;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            width: fit-content;
+        }
+        .btn-cursante:hover {
+            background-color: #d0d0d0;
+            color: #333;
+        }
+
         @media (max-width: 768px) {
             .hero-page h1 { font-size: 1.8rem; }
             .bloque { padding: 1.5rem; }
@@ -448,6 +491,10 @@
                     </div>
                     <div id="login-message" class="mt-3 text-center fw-semibold" style="color: var(--danger);"></div>
                 </div>
+                <!-- Botón para ir a modo Cursante -->
+                <a href="https://redconsultor.github.io/curso_residuos/mod2/" class="btn-cursante" title="Ir a modo cursante">
+                    <i class="fa-solid fa-pencil me-1"></i> Cursante
+                </a>
             </section>
 
             <section id="visor-content" class="hidden">
@@ -699,127 +746,43 @@
                 });
                 contenedor.appendChild(divMod2);
             }
+            // Actividad 3
+            if (u.mod3 && u.mod3.length > 0) {
+                const divMod3 = document.createElement('div');
+                divMod3.className = 'answer-box';
+                divMod3.innerHTML = `<h5><i class="fa-solid fa-table me-2"></i>Actividad 3 (Tabla)</h5>`;
+                const tabla = document.createElement('table');
+                tabla.className = 'tabla-visualizacion';
+                // Crear encabezado de tabla vertical
+                const thead = document.createElement('thead');
+                const filaHead1 = document.createElement('tr');
+                filaHead1.appendChild(document.createElement('th')).textContent = 'Campo';
+                for (let i = 1; i <= 3; i++) {
+                    filaHead1.appendChild(document.createElement('th')).textContent = `Ejemplo ${i}`;
+                }
+                thead.appendChild(filaHead1);
+                tabla.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                // Obtener todos los campos posibles
+                const campos = new Set();
+                u.mod3.forEach(obj => Object.keys(obj).forEach(k => campos.add(k)));
+                campos.forEach(campo => {
+                    const fila = document.createElement('tr');
+                    const tdCampo = document.createElement('td');
+                    tdCampo.textContent = campo;
+                    fila.appendChild(tdCampo);
+                    u.mod3.forEach((obj, idx) => {
+                        const td = document.createElement('td');
+                        td.textContent = obj[campo] || '';
+                        fila.appendChild(td);
+                    });
+                    tbody.appendChild(fila);
+                });
+                tabla.appendChild(tbody);
+                divMod3.appendChild(tabla);
+                contenedor.appendChild(divMod3);
+            }
             // Cargar evaluación actual
             document.getElementById('evaluacion-texto').value = u.evaluacion || '';
             document.getElementById('evaluacion-nivel').value = u.nivel || 'Sin evaluar';
-            document.getElementById('evaluacion-destacado').checked = (u.destacado === true || u.destacado === 'true' || u.destacado === 'TRUE');
-            document.getElementById('detalle-usuario').classList.remove('hidden');
-        }
-
-        function iniciarArrastreVisor(e, tarea, canvas, listaTareas) {
-            e.preventDefault();
-            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
-            if (!nodo) return;
-            const rect = nodo.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left;
-            const offsetY = e.clientY - rect.top;
-            function mover(e) {
-                const nuevoX = e.clientX - canvasRect.left - offsetX;
-                const nuevoY = e.clientY - canvasRect.top - offsetY;
-                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
-                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
-                nodo.style.left = tarea.x + 'px';
-                nodo.style.top = tarea.y + 'px';
-                actualizarConexionesVisor(canvas, listaTareas);
-            }
-            function terminar() { document.removeEventListener('mousemove', mover); document.removeEventListener('mouseup', terminar); }
-            document.addEventListener('mousemove', mover);
-            document.addEventListener('mouseup', terminar);
-        }
-
-        function iniciarArrastreVisorTouch(e, tarea, canvas, listaTareas) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const nodo = document.querySelector(`.task-node[data-id="${tarea.id}"]`);
-            if (!nodo) return;
-            const rect = nodo.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
-            const offsetX = touch.clientX - rect.left;
-            const offsetY = touch.clientY - rect.top;
-            function moverTouch(ev) {
-                ev.preventDefault();
-                const t = ev.touches[0];
-                const nuevoX = t.clientX - canvasRect.left - offsetX;
-                const nuevoY = t.clientY - canvasRect.top - offsetY;
-                tarea.x = Math.max(0, Math.min(nuevoX, canvas.scrollWidth - 150));
-                tarea.y = Math.max(0, Math.min(nuevoY, canvas.scrollHeight - 80));
-                nodo.style.left = tarea.x + 'px';
-                nodo.style.top = tarea.y + 'px';
-                actualizarConexionesVisor(canvas, listaTareas);
-            }
-            function terminarTouch() { document.removeEventListener('touchmove', moverTouch); document.removeEventListener('touchend', terminarTouch); }
-            document.addEventListener('touchmove', moverTouch, { passive: false });
-            document.addEventListener('touchend', terminarTouch);
-        }
-
-        function actualizarConexionesVisor(canvas, listaTareas) {
-            const svg = canvas.querySelector('svg');
-            svg.querySelectorAll('line').forEach(line => line.remove());
-            listaTareas.forEach(tarea => {
-                (tarea.conexiones || []).forEach(idDestino => {
-                    const destino = listaTareas.find(t => t.id === idDestino);
-                    if (!destino) return;
-                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    line.setAttribute('x1', tarea.x + 100); line.setAttribute('y1', tarea.y + 40);
-                    line.setAttribute('x2', destino.x + 100); line.setAttribute('y2', destino.y + 40);
-                    line.setAttribute('marker-end', 'url(#arrowhead)');
-                    svg.appendChild(line);
-                });
-            });
-        }
-
-        // Guardar evaluación
-        document.getElementById('btn-guardar-evaluacion').addEventListener('click', async () => {
-            if (!usuarioSeleccionado) return;
-
-            const btn = document.getElementById('btn-guardar-evaluacion');
-            const originalHTML = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
-
-            const evaluacion = document.getElementById('evaluacion-texto').value.trim();
-            const nivel = document.getElementById('evaluacion-nivel').value;
-            const destacado = document.getElementById('evaluacion-destacado').checked;
-
-            const body = new URLSearchParams({
-                action: 'saveEvaluacion',
-                correo: usuarioSeleccionado.correo || usuarioSeleccionado.nick + '@dominio.com',
-                evaluacion: evaluacion,
-                nivel: nivel,
-                destacado: destacado ? 'true' : 'false'
-            });
-
-            try {
-                const resp = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
-                });
-                const result = await resp.json();
-                if (result.success) {
-                    mostrarMensaje('evaluacion-message', 'Evaluación guardada correctamente.', 'success');
-                    usuarioSeleccionado.evaluacion = evaluacion;
-                    usuarioSeleccionado.nivel = nivel;
-                    usuarioSeleccionado.destacado = destacado;
-                    aplicarFiltros();
-                } else {
-                    mostrarMensaje('evaluacion-message', result.message || 'Error al guardar.', 'danger');
-                }
-            } catch (err) {
-                console.error(err);
-                mostrarMensaje('evaluacion-message', 'Error de conexión con el servidor.', 'danger');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalHTML;
-            }
-        });
-
-        document.getElementById('btn-imprimir').addEventListener('click', () => {
-            window.print();
-        });
-
-        document.addEventListener('DOMContentLoaded', cargarElementos);
-    </script>
-</body>
-</html>
+            document.getElementById('evaluacion-destacado').checked = (u.destacado === true || u.dest
